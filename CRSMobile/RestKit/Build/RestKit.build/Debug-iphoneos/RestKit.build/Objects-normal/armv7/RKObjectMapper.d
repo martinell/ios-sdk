@@ -1,0 +1,35 @@
+dependencies: \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMapper.m \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMapper.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMapping.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMappingDefinition.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectAttributeMapping.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectRelationshipMapping.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMappingOperation.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMappingResult.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMappingProvider.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKDynamicObjectMapping.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMappingProviderContextEntry.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKMappingOperationQueue.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/Support.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/RKErrors.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/RKMIMETypes.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/RKLog.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Vendor/LibComponentLogging/Core/lcl.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/lcl_config_components.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/lcl_config_logger.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Vendor/LibComponentLogging/NSLog/LCLNSLog.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/lcl_config_extensions.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/RKPathMatcher.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/RKDotNetDateFormatter.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/RKDirectory.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/RKBenchmark.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/NSDictionary+RKAdditions.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/NSString+RKAdditions.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/NSBundle+RKAdditions.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/NSArray+RKAdditions.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/../Network/NSData+RKAdditions.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/NSURL+RKAdditions.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMapperError.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMapper_Private.h \
+  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKObjectMappingProvider+Contexts.h

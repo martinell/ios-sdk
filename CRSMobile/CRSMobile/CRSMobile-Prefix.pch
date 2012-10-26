@@ -1,0 +1,12 @@
+//
+//© Catchoom Technologies S.L.
+//Licensed under the MIT license.
+//https://raw.github.com/catchoom/ios-crc/LICENSE
+//
+// Prefix header for all source files of the 'CRSMobile' target in the 'CRSMobile' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <RestKit/RestKit.h>
+#endif
