@@ -1,7 +1,7 @@
 //
 //© Catchoom Technologies S.L.
 //Licensed under the MIT license.
-//https://raw.github.com/catchoom/ios-crc/LICENSE
+//http://github.com/Catchoom/ios-crc/blob/master/LICENSE.md
 //
 //  CatchoomService.m
 //  CRSMobile
