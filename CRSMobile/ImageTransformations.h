@@ -1,12 +1,10 @@
 //
-//© Catchoom Technologies S.L.
-//Licensed under the MIT license.
-//http://github.com/Catchoom/ios-crc/blob/master/LICENSE.md
+// © Catchoom Technologies S.L.
+// Licensed under the MIT license.
+// http://github.com/Catchoom/ios-crc/blob/master/LICENSE
+//  All warranties and liabilities are disclaimed.
 //
 //  ImageTransformations.h
-//
-//  Created by David Marimon Sanjuan on 10/2/12.
-//  Copyright (c) 2012 Catchoom Advertising Network S.L. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
