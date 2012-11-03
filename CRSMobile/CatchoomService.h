@@ -19,10 +19,10 @@
 + (CatchoomService *)sharedCatchoom;
 
 // inits the server connection with catchoon. without this callback, the service will not work
-// this method must be called at the begining of the application.
+// this method must be called at the beginning of the application.
 - (void)beginServerConnection;
 
-// Creates a connection with the server using a token. With this callback, you are autentificating the
+// Creates a connection with the server using a token. With this callback, you are authenticating the
 // application against catchoom service and connecting the app to a specific collection.
 // will answer with the delegate didReceiveConnectResponse: or didFailLoadWithError:
 - (void)connect:(NSString *)token;
