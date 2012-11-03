@@ -3,7 +3,8 @@ ios-sdk
 
 iOS Catchoom SDK
 
-
+Usage
+-----
 
 Catchoom SDK has several callbacks that will provide you with all the data necessary to use Catchoom service. 
 
@@ -20,18 +21,18 @@ Once the header is imported, First thing you will need to do is to start the con
 Now you have initialized the connection with Catchoon Service, you can create calls to the service. Take into account that 
 the SDK can work asynchronously and unasynchronously. The callbacks are calling explicitly  the main queue (using GCD) so is up to you to create the request in background or not.  The available calls are:
 
-- (void)beginServerConnection: Inits the server connection with Catchoom. without this callback, the service will not work. this method must be called at the beginning of the application.
+* `- (void)beginServerConnection`: Inits the server connection with Catchoom. without this callback, the service will not work. this method must be called at the beginning of the application.
 
-- (void)connect:(NSString *)token: Creates a connection with the server using an existing token. With this callback you are authenticating  the application against Catchoom service and connecting the app to a specific collection. Will answer with the delegate didReceiveConnectionResponse or didFailLoadWithError
+* `- (void)connect:(NSString *)token`: Creates a connection with the server using an existing token. With this callback you are authenticating  the application against Catchoom service and connecting the app to a specific collection. Will answer with the delegate didReceiveConnectionResponse or didFailLoadWithError
 
 
-- (void)search:(UIImage *)image; Will create a serach call for an image taken by the user. Will answer with the delegate didReceiveSearcgResponse or didFailLoadWithError.
+* `- (void)search:(UIImage *)image`: Will create a serach call for an image taken by the user. Will answer with the delegate didReceiveSearcgResponse or didFailLoadWithError.
 
 
 the delegate callbacks are:
 
-- (void)didReceiveConnectResponse:(id)sender; delegate answer for connect callback. The returned object is a JSON with the information of the connection status.
+* `- (void)didReceiveConnectResponse:(id)sender`: delegate answer for connect callback. The returned object is a `JSON` with the information of the connection status.
 
-- (void)didReceiveSearchResponse:(NSArray *)response; delegate answer for Search callback. The return object is an Array of CatchoomSerachResponseItem(s). 
+* `- (void)didReceiveSearchResponse:(NSArray *)response`: delegate answer for Search callback. The return object is an `Array` of `CatchoomSerachResponseItem(s)`. 
 
-- (void)didFailLoadWithError:(NSError *)error; delegate answer in case of answer error.
+* `- (void)didFailLoadWithError:(NSError *)error`: delegate answer in case of answer error.
