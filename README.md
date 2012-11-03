@@ -9,7 +9,7 @@ Catchoom SDK has several callbacks that will provide you with all the data neces
 
 The main headers you will need to add to every file you want to use Catchoom SDK is CRSMobile.h. With this headder you will have acces to all the elements of the library. 
 
-#import <CRSMobile/CRSMobile.h>
+	#import <CRSMobile/CRSMobile.h>
 
 if you really want to use the library in every file of your app, add the header in yourAppName-Prefix.pch and this file will automatically link the library to all your source code files.
 
