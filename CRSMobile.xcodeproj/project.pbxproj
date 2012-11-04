@@ -16,15 +16,15 @@
 		F05F68F81632AEE100811C5C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68F71632AEE100811C5C /* QuartzCore.framework */; };
 		F05F68FA1632AEEC00811C5C /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68F91632AEEC00811C5C /* libxml2.dylib */; };
 		F05F690D1632B38300811C5C /* CatchoomSearchResponseItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F05F690B1632B38300811C5C /* CatchoomSearchResponseItem.m */; };
-		F05F69131632B3E000811C5C /* ImageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = F05F690F1632B3E000811C5C /* ImageHandler.h */; };
 		F05F69141632B3E000811C5C /* ImageHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = F05F69101632B3E000811C5C /* ImageHandler.m */; };
-		F05F69151632B3E000811C5C /* ImageTransformations.h in Headers */ = {isa = PBXBuildFile; fileRef = F05F69111632B3E000811C5C /* ImageTransformations.h */; };
 		F05F69161632B3E000811C5C /* ImageTransformations.m in Sources */ = {isa = PBXBuildFile; fileRef = F05F69121632B3E000811C5C /* ImageTransformations.m */; };
 		F073FDCB162F2E3100054A56 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F073FDCA162F2E3100054A56 /* Foundation.framework */; };
 		F073FDD0162F2E3100054A56 /* CRSMobile.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = F073FDCF162F2E3100054A56 /* CRSMobile.h */; };
 		F073FDDA162F2E8500054A56 /* CatchoomService.m in Sources */ = {isa = PBXBuildFile; fileRef = F073FDD9162F2E8500054A56 /* CatchoomService.m */; };
-		F073FE53162F330600054A56 /* CatchoomService.h in Headers */ = {isa = PBXBuildFile; fileRef = F073FDD8162F2E8500054A56 /* CatchoomService.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F0AB28FF163414E1004CD769 /* CatchoomSearchResponseItem.h in Headers */ = {isa = PBXBuildFile; fileRef = F0AB28FE163414E1004CD769 /* CatchoomSearchResponseItem.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		F09C92E916469CEE000BA493 /* ImageHandler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = F05F690F1632B3E000811C5C /* ImageHandler.h */; };
+		F09C92EA16469CEE000BA493 /* ImageTransformations.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = F05F69111632B3E000811C5C /* ImageTransformations.h */; };
+		F09C92EB16469CEE000BA493 /* CatchoomSearchResponseItem.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = F0AB28FE163414E1004CD769 /* CatchoomSearchResponseItem.h */; };
+		F09C92EC16469CEE000BA493 /* CatchoomService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = F073FDD8162F2E8500054A56 /* CatchoomService.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +79,10 @@
 			dstPath = "include/${PRODUCT_NAME}";
 			dstSubfolderSpec = 16;
 			files = (
+				F09C92E916469CEE000BA493 /* ImageHandler.h in CopyFiles */,
+				F09C92EA16469CEE000BA493 /* ImageTransformations.h in CopyFiles */,
+				F09C92EB16469CEE000BA493 /* CatchoomSearchResponseItem.h in CopyFiles */,
+				F09C92EC16469CEE000BA493 /* CatchoomService.h in CopyFiles */,
 				F073FDD0162F2E3100054A56 /* CRSMobile.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -221,10 +225,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F073FE53162F330600054A56 /* CatchoomService.h in Headers */,
-				F05F69131632B3E000811C5C /* ImageHandler.h in Headers */,
-				F05F69151632B3E000811C5C /* ImageTransformations.h in Headers */,
-				F0AB28FF163414E1004CD769 /* CatchoomSearchResponseItem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
