@@ -31,6 +31,8 @@
 // will answer with a delegate didReceiveSearchResponse: or didFailLoadWithError:
 - (void)search:(UIImage *)image;
 
+//send image with specific token. Sets the token as the default one and creates the normal callback.
+- (void)search:(UIImage*)image withToken:(NSString *)token;
 
 // block helper to download a image from a URL (handy to create a lazy load).
 void UIImageFromURL( NSURL * URL, void (^imageBlock)(UIImage * image), void (^errorBlock)(void));
