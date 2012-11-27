@@ -26,11 +26,7 @@ Tip: If you want to use the library in every file of your app, add the header in
 
 The available methods are described below.
 
-* `- (void)beginServerConnection`: Inits the connection with the server of Catchoom Recognition Service. Without this callback, the service will not work. Call this method at the beginning of your app with a singleton callback to `CatchoomService`.
-
-    `[[CatchoomService sharedCatchoom] beginServerConnection];`
-
-Now that you have initialized the connection with the server, you can perform calls to the service. The SDK can work asynchronously and synchronously. The callbacks are calling explicitly the main queue (using GCD) so it is up to you to create the request in background or not.
+The SDK can work asynchronously and synchronously. The callbacks are calling explicitly the main queue (using GCD) so it is up to you to create the request in background or not.
 
 
 * `- (void)connect:(NSString *)token`: checks if `token` is a valid token for a collection in the server. This callback answers with the delegates `didReceiveConnectionResponse` or `didFailLoadWithError`.
