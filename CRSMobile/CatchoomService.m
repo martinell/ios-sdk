@@ -58,6 +58,7 @@
     static dispatch_once_t once;
     static CatchoomService *sharedCatchoom;
     dispatch_once(&once, ^ { sharedCatchoom = [[CatchoomService alloc] init];
+        [sharedCatchoom beginServerConnection];
     });
     return sharedCatchoom;
 }
