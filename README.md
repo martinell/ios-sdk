@@ -11,7 +11,7 @@ To build the project or use the library, you will need XCode, and at least the i
 
 Installation
 ------------
-You can find the instructions about how to use the iOS-SDK in conjunction with your app in the Wiki of this project.
+You can find the instructions about how to use the iOS-SDK in conjunction with your app [here](https://github.com/Catchoom/ios-sdk/wiki/Installation-of-the-iOS-SDK-into-your-own-app).
 
 Usage
 -----
