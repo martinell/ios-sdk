@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D3477CE5173A8B0D002A4DAF /* Catchoom-iOS-SDK-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = D3477CDB173A8B0D002A4DAF /* Catchoom-iOS-SDK-Prefix.pch */; };
+		D3477CE6173A8B0D002A4DAF /* CatchoomSearchResponseItem.h in Headers */ = {isa = PBXBuildFile; fileRef = D3477CDC173A8B0D002A4DAF /* CatchoomSearchResponseItem.h */; };
+		D3477CE7173A8B0D002A4DAF /* CatchoomSearchResponseItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D3477CDD173A8B0D002A4DAF /* CatchoomSearchResponseItem.m */; };
+		D3477CE8173A8B0D002A4DAF /* CatchoomService.h in Headers */ = {isa = PBXBuildFile; fileRef = D3477CDE173A8B0D002A4DAF /* CatchoomService.h */; };
+		D3477CE9173A8B0D002A4DAF /* CatchoomService.m in Sources */ = {isa = PBXBuildFile; fileRef = D3477CDF173A8B0D002A4DAF /* CatchoomService.m */; };
+		D3477CEA173A8B0D002A4DAF /* Catchoom-iOS-SDK.h in Headers */ = {isa = PBXBuildFile; fileRef = D3477CE0173A8B0D002A4DAF /* Catchoom-iOS-SDK.h */; };
+		D3477CEB173A8B0D002A4DAF /* ImageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = D3477CE1173A8B0D002A4DAF /* ImageHandler.h */; };
+		D3477CEC173A8B0D002A4DAF /* ImageHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = D3477CE2173A8B0D002A4DAF /* ImageHandler.m */; };
+		D3477CED173A8B0D002A4DAF /* ImageTransformations.h in Headers */ = {isa = PBXBuildFile; fileRef = D3477CE3173A8B0D002A4DAF /* ImageTransformations.h */; };
+		D3477CEE173A8B0D002A4DAF /* ImageTransformations.m in Sources */ = {isa = PBXBuildFile; fileRef = D3477CE4173A8B0D002A4DAF /* ImageTransformations.m */; };
 		F05F68EC1632AE9D00811C5C /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68E01632AE3700811C5C /* libRestKit.a */; };
 		F05F68EE1632AEB000811C5C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68ED1632AEB000811C5C /* CFNetwork.framework */; };
 		F05F68F01632AEBA00811C5C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68EF1632AEBA00811C5C /* CoreData.framework */; };
@@ -15,16 +25,7 @@
 		F05F68F61632AED900811C5C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68F51632AED900811C5C /* SystemConfiguration.framework */; };
 		F05F68F81632AEE100811C5C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68F71632AEE100811C5C /* QuartzCore.framework */; };
 		F05F68FA1632AEEC00811C5C /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68F91632AEEC00811C5C /* libxml2.dylib */; };
-		F05F690D1632B38300811C5C /* CatchoomSearchResponseItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F05F690B1632B38300811C5C /* CatchoomSearchResponseItem.m */; };
-		F05F69141632B3E000811C5C /* ImageHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = F05F69101632B3E000811C5C /* ImageHandler.m */; };
-		F05F69161632B3E000811C5C /* ImageTransformations.m in Sources */ = {isa = PBXBuildFile; fileRef = F05F69121632B3E000811C5C /* ImageTransformations.m */; };
 		F073FDCB162F2E3100054A56 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F073FDCA162F2E3100054A56 /* Foundation.framework */; };
-		F073FDD0162F2E3100054A56 /* CRSMobile.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = F073FDCF162F2E3100054A56 /* CRSMobile.h */; };
-		F073FDDA162F2E8500054A56 /* CatchoomService.m in Sources */ = {isa = PBXBuildFile; fileRef = F073FDD9162F2E8500054A56 /* CatchoomService.m */; };
-		F09C92E916469CEE000BA493 /* ImageHandler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = F05F690F1632B3E000811C5C /* ImageHandler.h */; };
-		F09C92EA16469CEE000BA493 /* ImageTransformations.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = F05F69111632B3E000811C5C /* ImageTransformations.h */; };
-		F09C92EB16469CEE000BA493 /* CatchoomSearchResponseItem.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = F0AB28FE163414E1004CD769 /* CatchoomSearchResponseItem.h */; };
-		F09C92EC16469CEE000BA493 /* CatchoomService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = F073FDD8162F2E8500054A56 /* CatchoomService.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,17 +80,22 @@
 			dstPath = "include/${PRODUCT_NAME}";
 			dstSubfolderSpec = 16;
 			files = (
-				F09C92E916469CEE000BA493 /* ImageHandler.h in CopyFiles */,
-				F09C92EA16469CEE000BA493 /* ImageTransformations.h in CopyFiles */,
-				F09C92EB16469CEE000BA493 /* CatchoomSearchResponseItem.h in CopyFiles */,
-				F09C92EC16469CEE000BA493 /* CatchoomService.h in CopyFiles */,
-				F073FDD0162F2E3100054A56 /* CRSMobile.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D3477CDB173A8B0D002A4DAF /* Catchoom-iOS-SDK-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Catchoom-iOS-SDK-Prefix.pch"; sourceTree = "<group>"; };
+		D3477CDC173A8B0D002A4DAF /* CatchoomSearchResponseItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CatchoomSearchResponseItem.h; sourceTree = "<group>"; };
+		D3477CDD173A8B0D002A4DAF /* CatchoomSearchResponseItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CatchoomSearchResponseItem.m; sourceTree = "<group>"; };
+		D3477CDE173A8B0D002A4DAF /* CatchoomService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CatchoomService.h; sourceTree = "<group>"; };
+		D3477CDF173A8B0D002A4DAF /* CatchoomService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CatchoomService.m; sourceTree = "<group>"; };
+		D3477CE0173A8B0D002A4DAF /* Catchoom-iOS-SDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Catchoom-iOS-SDK.h"; sourceTree = "<group>"; };
+		D3477CE1173A8B0D002A4DAF /* ImageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageHandler.h; sourceTree = "<group>"; };
+		D3477CE2173A8B0D002A4DAF /* ImageHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageHandler.m; sourceTree = "<group>"; };
+		D3477CE3173A8B0D002A4DAF /* ImageTransformations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageTransformations.h; sourceTree = "<group>"; };
+		D3477CE4173A8B0D002A4DAF /* ImageTransformations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageTransformations.m; sourceTree = "<group>"; };
 		F05F68D41632AE3700811C5C /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = RestKit/RestKit.xcodeproj; sourceTree = "<group>"; };
 		F05F68ED1632AEB000811C5C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		F05F68EF1632AEBA00811C5C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -98,18 +104,8 @@
 		F05F68F51632AED900811C5C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		F05F68F71632AEE100811C5C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		F05F68F91632AEEC00811C5C /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
-		F05F690B1632B38300811C5C /* CatchoomSearchResponseItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CatchoomSearchResponseItem.m; sourceTree = "<group>"; };
-		F05F690F1632B3E000811C5C /* ImageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageHandler.h; sourceTree = "<group>"; };
-		F05F69101632B3E000811C5C /* ImageHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageHandler.m; sourceTree = "<group>"; };
-		F05F69111632B3E000811C5C /* ImageTransformations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageTransformations.h; sourceTree = "<group>"; };
-		F05F69121632B3E000811C5C /* ImageTransformations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageTransformations.m; sourceTree = "<group>"; };
-		F073FDC7162F2E3100054A56 /* libCRSMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCRSMobile.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F073FDC7162F2E3100054A56 /* libCatchoom-iOS-SDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libCatchoom-iOS-SDK.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F073FDCA162F2E3100054A56 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		F073FDCE162F2E3100054A56 /* CRSMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CRSMobile-Prefix.pch"; sourceTree = "<group>"; };
-		F073FDCF162F2E3100054A56 /* CRSMobile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRSMobile.h; sourceTree = "<group>"; };
-		F073FDD8162F2E8500054A56 /* CatchoomService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CatchoomService.h; sourceTree = "<group>"; };
-		F073FDD9162F2E8500054A56 /* CatchoomService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CatchoomService.m; sourceTree = "<group>"; };
-		F0AB28FE163414E1004CD769 /* CatchoomSearchResponseItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CatchoomSearchResponseItem.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +128,47 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D3477CDA173A8B0D002A4DAF /* Catchoom-iOS-SDK */ = {
+			isa = PBXGroup;
+			children = (
+				D3477CE0173A8B0D002A4DAF /* Catchoom-iOS-SDK.h */,
+				D3477CF1173A8B6C002A4DAF /* Supporting Files */,
+				D3477CDE173A8B0D002A4DAF /* CatchoomService.h */,
+				D3477CDF173A8B0D002A4DAF /* CatchoomService.m */,
+				D3477CF0173A8B57002A4DAF /* Model */,
+				D3477CEF173A8B1D002A4DAF /* ImageHandler */,
+			);
+			path = "Catchoom-iOS-SDK";
+			sourceTree = "<group>";
+		};
+		D3477CEF173A8B1D002A4DAF /* ImageHandler */ = {
+			isa = PBXGroup;
+			children = (
+				D3477CE1173A8B0D002A4DAF /* ImageHandler.h */,
+				D3477CE2173A8B0D002A4DAF /* ImageHandler.m */,
+				D3477CE3173A8B0D002A4DAF /* ImageTransformations.h */,
+				D3477CE4173A8B0D002A4DAF /* ImageTransformations.m */,
+			);
+			name = ImageHandler;
+			sourceTree = "<group>";
+		};
+		D3477CF0173A8B57002A4DAF /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D3477CDC173A8B0D002A4DAF /* CatchoomSearchResponseItem.h */,
+				D3477CDD173A8B0D002A4DAF /* CatchoomSearchResponseItem.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		D3477CF1173A8B6C002A4DAF /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				D3477CDB173A8B0D002A4DAF /* Catchoom-iOS-SDK-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		F05F68D51632AE3700811C5C /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,31 +181,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F05F69091632B36F00811C5C /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				F0AB28FE163414E1004CD769 /* CatchoomSearchResponseItem.h */,
-				F05F690B1632B38300811C5C /* CatchoomSearchResponseItem.m */,
-			);
-			name = Model;
-			sourceTree = "<group>";
-		};
-		F05F690E1632B3CD00811C5C /* Image Handlers */ = {
-			isa = PBXGroup;
-			children = (
-				F05F690F1632B3E000811C5C /* ImageHandler.h */,
-				F05F69101632B3E000811C5C /* ImageHandler.m */,
-				F05F69111632B3E000811C5C /* ImageTransformations.h */,
-				F05F69121632B3E000811C5C /* ImageTransformations.m */,
-			);
-			name = "Image Handlers";
-			sourceTree = "<group>";
-		};
 		F073FDBC162F2E3100054A56 = {
 			isa = PBXGroup;
 			children = (
+				D3477CDA173A8B0D002A4DAF /* Catchoom-iOS-SDK */,
 				F05F68D41632AE3700811C5C /* RestKit.xcodeproj */,
-				F073FDCC162F2E3100054A56 /* CRSMobile */,
 				F073FDC9162F2E3100054A56 /* Frameworks */,
 				F073FDC8162F2E3100054A56 /* Products */,
 			);
@@ -177,7 +194,7 @@
 		F073FDC8162F2E3100054A56 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F073FDC7162F2E3100054A56 /* libCRSMobile.a */,
+				F073FDC7162F2E3100054A56 /* libCatchoom-iOS-SDK.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -197,27 +214,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		F073FDCC162F2E3100054A56 /* CRSMobile */ = {
-			isa = PBXGroup;
-			children = (
-				F05F690E1632B3CD00811C5C /* Image Handlers */,
-				F05F69091632B36F00811C5C /* Model */,
-				F073FDCF162F2E3100054A56 /* CRSMobile.h */,
-				F073FDCD162F2E3100054A56 /* Supporting Files */,
-				F073FDD8162F2E8500054A56 /* CatchoomService.h */,
-				F073FDD9162F2E8500054A56 /* CatchoomService.m */,
-			);
-			path = CRSMobile;
-			sourceTree = "<group>";
-		};
-		F073FDCD162F2E3100054A56 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				F073FDCE162F2E3100054A56 /* CRSMobile-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -225,15 +221,21 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3477CE5173A8B0D002A4DAF /* Catchoom-iOS-SDK-Prefix.pch in Headers */,
+				D3477CE6173A8B0D002A4DAF /* CatchoomSearchResponseItem.h in Headers */,
+				D3477CE8173A8B0D002A4DAF /* CatchoomService.h in Headers */,
+				D3477CEA173A8B0D002A4DAF /* Catchoom-iOS-SDK.h in Headers */,
+				D3477CEB173A8B0D002A4DAF /* ImageHandler.h in Headers */,
+				D3477CED173A8B0D002A4DAF /* ImageTransformations.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		F073FDC6162F2E3100054A56 /* CRSMobile */ = {
+		F073FDC6162F2E3100054A56 /* Catchoom-iOS-SDK */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F073FDD5162F2E3100054A56 /* Build configuration list for PBXNativeTarget "CRSMobile" */;
+			buildConfigurationList = F073FDD5162F2E3100054A56 /* Build configuration list for PBXNativeTarget "Catchoom-iOS-SDK" */;
 			buildPhases = (
 				F073FDC3162F2E3100054A56 /* Sources */,
 				F073FDC4162F2E3100054A56 /* Frameworks */,
@@ -245,9 +247,9 @@
 			dependencies = (
 				F05F68EB1632AE9600811C5C /* PBXTargetDependency */,
 			);
-			name = CRSMobile;
+			name = "Catchoom-iOS-SDK";
 			productName = CRSMobile;
-			productReference = F073FDC7162F2E3100054A56 /* libCRSMobile.a */;
+			productReference = F073FDC7162F2E3100054A56 /* libCatchoom-iOS-SDK.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -259,7 +261,7 @@
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = Catchoom;
 			};
-			buildConfigurationList = F073FDC1162F2E3100054A56 /* Build configuration list for PBXProject "CRSMobile" */;
+			buildConfigurationList = F073FDC1162F2E3100054A56 /* Build configuration list for PBXProject "Catchoom-iOS-SDK" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -277,7 +279,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				F073FDC6162F2E3100054A56 /* CRSMobile */,
+				F073FDC6162F2E3100054A56 /* Catchoom-iOS-SDK */,
 			);
 		};
 /* End PBXProject section */
@@ -325,10 +327,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F073FDDA162F2E8500054A56 /* CatchoomService.m in Sources */,
-				F05F690D1632B38300811C5C /* CatchoomSearchResponseItem.m in Sources */,
-				F05F69141632B3E000811C5C /* ImageHandler.m in Sources */,
-				F05F69161632B3E000811C5C /* ImageTransformations.m in Sources */,
+				D3477CE7173A8B0D002A4DAF /* CatchoomSearchResponseItem.m in Sources */,
+				D3477CE9173A8B0D002A4DAF /* CatchoomService.m in Sources */,
+				D3477CEC173A8B0D002A4DAF /* ImageHandler.m in Sources */,
+				D3477CEE173A8B0D002A4DAF /* ImageTransformations.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -397,9 +399,9 @@
 		F073FDD6162F2E3100054A56 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DSTROOT = /tmp/CRSMobile.dst;
+				DSTROOT = "/tmp/Catchoom-iOS-SDK.dst";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CRSMobile/CRSMobile-Prefix.pch";
+				GCC_PREFIX_HEADER = "Catchoom-iOS-SDK/Catchoom-iOS-SDK-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"\"$(BUILT_PRODUCTS_DIR)/../../Headers\"",
 					"\"$(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts\"",
@@ -410,7 +412,7 @@
 					"-all_load",
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "include/$(TARGET_NAME)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Catchoom-iOS-SDK";
 				PUBLIC_HEADERS_FOLDER_PATH = "include/$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -419,9 +421,9 @@
 		F073FDD7162F2E3100054A56 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DSTROOT = /tmp/CRSMobile.dst;
+				DSTROOT = "/tmp/Catchoom-iOS-SDK.dst";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "CRSMobile/CRSMobile-Prefix.pch";
+				GCC_PREFIX_HEADER = "Catchoom-iOS-SDK/Catchoom-iOS-SDK-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"\"$(BUILT_PRODUCTS_DIR)/../../Headers\"",
 					"\"$(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts\"",
@@ -432,7 +434,7 @@
 					"-all_load",
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "include/$(TARGET_NAME)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Catchoom-iOS-SDK";
 				PUBLIC_HEADERS_FOLDER_PATH = "include/$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -441,7 +443,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F073FDC1162F2E3100054A56 /* Build configuration list for PBXProject "CRSMobile" */ = {
+		F073FDC1162F2E3100054A56 /* Build configuration list for PBXProject "Catchoom-iOS-SDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F073FDD3162F2E3100054A56 /* Debug */,
@@ -450,7 +452,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F073FDD5162F2E3100054A56 /* Build configuration list for PBXNativeTarget "CRSMobile" */ = {
+		F073FDD5162F2E3100054A56 /* Build configuration list for PBXNativeTarget "Catchoom-iOS-SDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F073FDD6162F2E3100054A56 /* Debug */,

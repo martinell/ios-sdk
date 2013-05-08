@@ -4,7 +4,7 @@
 // http://github.com/Catchoom/ios-crc/blob/master/LICENSE
 //  All warranties and liabilities are disclaimed.
 //
-//  CRSMobile.h
+//  Catchoom-iOS-SDK.h
 //
 
 #import <Foundation/Foundation.h>
