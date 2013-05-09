@@ -4,7 +4,7 @@
 // http://github.com/Catchoom/ios-crc/blob/master/LICENSE
 //  All warranties and liabilities are disclaimed.
 //
-// Prefix header for all source files of the 'CRSMobile' target in the 'CRSMobile' project
+// Prefix header for all source files of the 'Catchoom-iOS-SDK' target in the 'Catchoom-iOS-SDK' project
 //
 
 #ifdef __OBJC__

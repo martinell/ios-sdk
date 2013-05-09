@@ -24,12 +24,29 @@
 // will answer with the delegate didReceiveConnectResponse: or didFailLoadWithError:
 - (void)connect:(NSString *)token;
 
-// Will create a search call for an image taken by the user.
-// will answer with a delegate didReceiveSearchResponse: or didFailLoadWithError:
+// Performs a search call for an image taken by the user.
+// Answers with a delegate didReceiveSearchResponse: or didFailLoadWithError:
 - (void)search:(UIImage *)image;
 
 //send image with specific token. Sets the token as the default one and creates the normal callback.
 - (void)search:(UIImage*)image withToken:(NSString *)token;
+
+/// Finder Mode: performs a continuous scan of information in the viewfinder.
+
+// Creates an AVCaptureSession suitable for Finder Mode.
+- (void)startFinderMode:(NSTimeInterval)secondsBetweenSearches withPreview:(UIView*)mainView;
+
+// Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
+- (void)stopFinderMode;
+
+/*
+// Selector that captures an image triggered by theTimer in Finder Mode and sends it asynchronously.
+- (void)captureImageFinderMode:(NSTimer*)theTimer;
+
+// Performs a search call for an image captured in Finder Mode.
+// Answers with a delegate didReceiveSearchResponse: or didFailLoadWithError:
+- (void)searchFinderMode:(NSData *)imageNSData;
+*/
 
 // block helper to download a image from a URL (handy to create a lazy load).
 void UIImageFromURL( NSURL * URL, void (^imageBlock)(UIImage * image), void (^errorBlock)(void));
