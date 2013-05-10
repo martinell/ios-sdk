@@ -13,14 +13,17 @@
 #import <AVFoundation/AVFoundation.h>
 #import <ImageIO/CGImageProperties.h>
 
+#define MINVIDEOFRAMERATE 30
+#define MAXVIDEOFRAMERATE 15
 
 @interface CatchoomService ()
 {
     NSMutableArray *_parsedElements;
-    NSTimer *_nstimerStillImageCapture;
-    AVCaptureStillImageOutput *_stillImageOutput;
+    AVCaptureVideoDataOutput *_videoCaptureOutput;
     AVCaptureSession *_avCaptureSession;
     AVCaptureVideoPreviewLayer *_captureVideoPreviewLayer;
+    int32_t _NumOfFramesCaptured;
+    int32_t _searchRate;
 }
 
 // Selector that captures an image triggered by theTimer in Finder Mode and sends it asynchronously.
@@ -29,6 +32,9 @@
 // Performs a search call for an image captured in Finder Mode.
 // Answers with a delegate didReceiveSearchResponse: or didFailLoadWithError:
 - (void)searchFinderMode:(NSData *)imageNSData;
+
+// Helper function to transform a buffer into a UIImage
+- (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer;
 
 @end
 
@@ -211,8 +217,13 @@
 #pragma mark -
 #pragma mark - Finder Mode
 // Creates an AVCaptureSession suitable for Finder Mode.
-- (void)startFinderMode:(NSTimeInterval)secondsBetweenSearches withPreview:(UIView*)mainView
+- (void)startFinderMode:(int32_t)searchesPerSecond withPreview:(UIView*)mainView
 {
+    if  (searchesPerSecond <= 0)
+    {
+        searchesPerSecond = 2;
+    }
+    
     // Create and Configure a Capture Session with Low preset = 192x144
     _avCaptureSession = [[AVCaptureSession alloc] init];
     _avCaptureSession.sessionPreset = AVCaptureSessionPresetLow;
@@ -225,19 +236,34 @@
     if (!avCaptureDeviceInput) {
         NSLog(@"ERROR: Couldn't create AVCaptureDeviceInput.");
     }
+    
+    if (![avCaptureDevice lockForConfiguration:&error]) {
+        NSLog(@"ERROR: Couldn't lock camera device configuration.");
+    }
+    if ([avCaptureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+        //CGPoint autofocusPoint = CGPointMake(0.5f, 0.5f);
+        //[avCaptureDevice setFocusPointOfInterest:autofocusPoint];
+        [avCaptureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+    }
+    [avCaptureDevice unlockForConfiguration];
+    
+    
     if ( [_avCaptureSession canAddInput:avCaptureDeviceInput] )
     {
         [_avCaptureSession addInput:avCaptureDeviceInput];
     }
     
     // Create and Configure the Data Output
-    _stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-    NSDictionary *outputSettings = @{ AVVideoCodecKey : AVVideoCodecJPEG, AVVideoQualityKey : @0.75};
-    [_stillImageOutput setOutputSettings:outputSettings];
-    
-    if ( [_avCaptureSession canAddOutput:_stillImageOutput] )
+    _videoCaptureOutput = [[AVCaptureVideoDataOutput alloc] init];
+    _videoCaptureOutput.videoSettings = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
+    _videoCaptureOutput.alwaysDiscardsLateVideoFrames = YES;
+    AVCaptureConnection *videoCaptureConnection = [_videoCaptureOutput connectionWithMediaType:AVMediaTypeVideo];
+    [videoCaptureConnection setVideoMinFrameDuration:CMTimeMake(1, MINVIDEOFRAMERATE)];
+    [videoCaptureConnection setVideoMaxFrameDuration:CMTimeMake(1, MAXVIDEOFRAMERATE)];
+     
+    if ( [_avCaptureSession canAddOutput:_videoCaptureOutput] )
     {
-        [_avCaptureSession addOutput:_stillImageOutput];
+        [_avCaptureSession addOutput:_videoCaptureOutput];
     }
     
     if (mainView != nil) {
@@ -255,57 +281,103 @@
         [rootLayer addSublayer:_captureVideoPreviewLayer];
     }
     
+    dispatch_queue_t queue = dispatch_queue_create("SearchFinderModeQueue", NULL);
+    [_videoCaptureOutput setSampleBufferDelegate:self queue:queue];
+    dispatch_release(queue);
+    
+    _searchRate = MINVIDEOFRAMERATE/searchesPerSecond;
+    
+    _NumOfFramesCaptured = 0;
+    
     // Start capturing
+    NSLog(@"Starting Finder mode.");
     [_avCaptureSession startRunning];
     
-    // Capture image every secondsBetweenSearches seconds
-    _nstimerStillImageCapture = [NSTimer scheduledTimerWithTimeInterval:secondsBetweenSearches target:self selector:@selector(captureImageFinderMode:) userInfo:nil repeats:YES];
 }
 
 // Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
 - (void)stopFinderMode
 {
-    // Stop timer (= stop capturing still images)
-	[_nstimerStillImageCapture invalidate];
-	_nstimerStillImageCapture = nil;
-    
+
     // Stop Camera Capture
     [_avCaptureSession stopRunning];
     
-    _stillImageOutput = nil;
+    _videoCaptureOutput = nil;
+    //_stillImageOutput = nil;
+    
     [_captureVideoPreviewLayer removeFromSuperlayer];
     _captureVideoPreviewLayer = nil;
+    
+    NSLog(@"Stopped Finder mode.");
 }
 
-// Selector that captures an image triggered by theTimer in Finder Mode and sends it asynchronously.
-- (void)captureImageFinderMode:(NSTimer*)theTimer
+- (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer
 {
-    AVCaptureConnection *stillImageConnection = [_stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
     
-    [_stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection completionHandler:
-     ^(CMSampleBufferRef imageSampleBuffer, NSError *error) {
-         /* // Uncomment if exif details are needed.
-          CFDictionaryRef exifAttachments = CMGetAttachment(imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
-          if (exifAttachments) {
-          NSLog(@"attachments: %@", exifAttachments);
-          } else {
-          NSLog(@"no attachments");
-          }*/
-         NSLog(@"Captured Still Image. Preparing to Send.");
-         
-         // Convert CMSampleBufferRef to UIImage
-         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
-         //UIImage *image = [[UIImage alloc] initWithData:imageData];
-         
-         // Send image to CRS asynchronously
-         dispatch_queue_t backgroundQueue;
-         backgroundQueue = dispatch_queue_create("com.catchoom.catchoom.background", NULL);
-         dispatch_async(backgroundQueue, ^(void) {
-             [self searchFinderMode:imageData];
-         });
-         dispatch_release(backgroundQueue);
-     }];
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    // Lock the base address of the pixel buffer.
+    CVPixelBufferLockBaseAddress(imageBuffer,0);
     
+    // Get the number of bytes per row for the pixel buffer.
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    // Get the pixel buffer width and height.
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    
+    // Create a device-dependent RGB color space.
+    static CGColorSpaceRef colorSpace = NULL;
+    if (colorSpace == NULL) {
+        colorSpace = CGColorSpaceCreateDeviceRGB();
+        if (colorSpace == NULL) {
+            // Handle the error appropriately.
+            return nil;
+        }
+    }
+    
+    // Get the base address of the pixel buffer.
+    void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
+    // Get the data size for contiguous planes of the pixel buffer.
+    size_t bufferSize = CVPixelBufferGetDataSize(imageBuffer);
+    
+    // Create a Quartz direct-access data provider that uses data we supply.
+    CGDataProviderRef dataProvider =
+    CGDataProviderCreateWithData(NULL, baseAddress, bufferSize, NULL);
+    // Create a bitmap image from data supplied by the data provider.
+    CGImageRef cgImage =
+    CGImageCreate(width, height, 8, 32, bytesPerRow,
+                  colorSpace, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little,
+                  dataProvider, NULL, true, kCGRenderingIntentDefault);
+    CGDataProviderRelease(dataProvider);
+    
+    // Create and return an image object to represent the Quartz image.
+    UIImage *image = [UIImage imageWithCGImage:cgImage];
+    CGImageRelease(cgImage);
+    
+    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+    
+    return image;
+}
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput
+         didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+                fromConnection:(AVCaptureConnection *)connection {
+    
+    if (_NumOfFramesCaptured == 0) {
+        UIImage *resultUIImage = [self imageFromSampleBuffer:sampleBuffer];
+        NSData *imageData = UIImageJPEGRepresentation(resultUIImage, 0.75);
+        
+        // Send image to CRS asynchronously
+        dispatch_queue_t backgroundQueue;
+        backgroundQueue = dispatch_queue_create("com.catchoom.catchoom.background", NULL);
+        dispatch_async(backgroundQueue, ^(void) {
+            [self searchFinderMode:imageData];
+        });
+        dispatch_release(backgroundQueue);
+        _NumOfFramesCaptured = _searchRate;
+    }
+    //NSLog(@"_NumOfFramesCaptured: %d",_NumOfFramesCaptured);
+    _NumOfFramesCaptured--;
+
 }
 
 // Performs a search call for an image captured in Finder Mode.
@@ -354,6 +426,7 @@
                             [alert show];
                             
                         }
+                        
                         
                     }else {
                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"")

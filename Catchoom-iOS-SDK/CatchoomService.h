@@ -9,10 +9,11 @@
 
 #import <Foundation/Foundation.h>
 #import "CatchoomSearchResponseItem.h"
+#import <AVFoundation/AVFoundation.h>
 
 @protocol CatchoomServiceProtocol;
 
-@interface CatchoomService : NSObject
+@interface CatchoomService : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property (nonatomic, weak) id <CatchoomServiceProtocol> delegate;
 
@@ -34,7 +35,7 @@
 /// Finder Mode: performs a continuous scan of information in the viewfinder.
 
 // Creates an AVCaptureSession suitable for Finder Mode.
-- (void)startFinderMode:(NSTimeInterval)secondsBetweenSearches withPreview:(UIView*)mainView;
+- (void)startFinderMode:(int32_t)searchesPerSecond withPreview:(UIView*)mainView;
 
 // Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
 - (void)stopFinderMode;
