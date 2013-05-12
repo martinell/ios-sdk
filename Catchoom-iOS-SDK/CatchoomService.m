@@ -12,6 +12,7 @@
 #import "ImageHandler.h"
 #import <AVFoundation/AVFoundation.h>
 #import <ImageIO/CGImageProperties.h>
+#import "ScanFXLayer.h"
 
 #define MINVIDEOFRAMERATE 30
 #define MAXVIDEOFRAMERATE 15
@@ -22,8 +23,7 @@
     AVCaptureVideoDataOutput *_videoCaptureOutput;
     AVCaptureSession *_avCaptureSession;
     AVCaptureVideoPreviewLayer *_captureVideoPreviewLayer;
-    CALayer *_scanFXlayer;
-    CALayer *_scanFXlayer2;
+    ScanFXLayer *_scanFXlayer;
     int32_t _NumOfFramesCaptured;
     int32_t _searchRate;
 }
@@ -282,52 +282,9 @@
         [_captureVideoPreviewLayer setFrame:[rootLayer bounds]];
         [rootLayer addSublayer:_captureVideoPreviewLayer];
         
-        // Optional: add layer to draw scanning effect
-        _scanFXlayer = [CALayer layer];
-        [_scanFXlayer setFrame:[rootLayer bounds]];
-        [_scanFXlayer setDelegate:self];
-        [_scanFXlayer setNeedsDisplay];
-        
-        /*CABasicAnimation* animation = [CABasicAnimation animationWithKeyPath:@"transform.translation"];
-         [animation setDuration:1.5];
-         [animation setRepeatCount:INT_MAX];
-         [animation setFromValue:[NSNumber numberWithInt:0] ];
-         CGRect layerBounds = rootLayer.bounds;
-         [animation setToValue:[NSNumber numberWithInt:layerBounds.size.width]];
-         */
-        
-        CAKeyframeAnimation *animationLeft2Right = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.x"];
-        [animationLeft2Right setDuration:2.0];
-        [animationLeft2Right setRepeatCount:INT_MAX];
-        
-        NSMutableArray *values = [NSMutableArray array];
-        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.x]];
-        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.x+rootLayer.bounds.size.width]];
-        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.x]];
-        [animationLeft2Right setValues:values];
-        
-        [_scanFXlayer addAnimation:animationLeft2Right forKey:nil];
-        
-        
-        _scanFXlayer2 = [CALayer layer];
-        [_scanFXlayer2 setFrame:[rootLayer bounds]];
-        [_scanFXlayer2 setDelegate:self];
-        [_scanFXlayer2 setNeedsDisplay];
-        
-        CAKeyframeAnimation *animationBottom2Top = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.y"];
-        [animationBottom2Top setDuration:2.0];
-        [animationBottom2Top setRepeatCount:INT_MAX];
-        
-        [values removeAllObjects];
-        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.y]];
-        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.y + rootLayer.bounds.size.height]];
-        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.y]];
-        [animationBottom2Top setValues:values];
-        
-        [_scanFXlayer2 addAnimation:animationBottom2Top forKey:nil];
-        
-        //[rootLayer addSublayer:_scanFXlayer];
-        [rootLayer addSublayer:_scanFXlayer2];
+        //[Optional] add layer to draw scanning effect
+        _scanFXlayer = [[ScanFXLayer alloc] initWithBounds:[rootLayer bounds]];
+        [rootLayer addSublayer:_scanFXlayer];
         
     }
     
@@ -345,64 +302,6 @@
     
 }
 
-- (void) drawLayer:(CALayer*)layer inContext:(CGContextRef) ctx
-{
-    if (layer == _scanFXlayer) {
-        CGRect layerBounds = layer.bounds;
-        /*
-         
-         CGContextMoveToPoint(ctx, layerBounds.origin.x, layerBounds.origin.y);
-         CGContextAddLineToPoint(ctx, layerBounds.origin.x, layerBounds.origin.y + layerBounds.size.height);
-         
-         CGContextStrokePath(ctx);
-         
-         CGRect layerBounds = layer.bounds;*/
-        
-        CGColorSpaceRef myColorspace=CGColorSpaceCreateDeviceRGB();
-        size_t num_locations = 2;
-        CGFloat locations[2] = { 1.0, 0.0 };
-        CGFloat components[8] =	{ 0.0, 0.0, 0.0, 0.0, 176.0f/255.0f, 1.0f/255.0f, 36.0f/255.0f, 1.0 };
-        
-        CGGradientRef myGradient = CGGradientCreateWithColorComponents(myColorspace, components, locations, num_locations);
-        
-        CGPoint myStartPoint, myEndPoint;
-        myStartPoint.x = 0.0;
-        myStartPoint.y = 0.0;
-        myEndPoint.x = 30.0;
-        myEndPoint.y = 0.0;
-        CGContextDrawLinearGradient (ctx, myGradient, myStartPoint, myEndPoint, 0);
-        
-        CGContextSaveGState(ctx);
-        CGContextAddRect(ctx, CGRectMake(layerBounds.origin.x, layerBounds.origin.y, 1, layerBounds.size.height));
-        CGContextClip(ctx);
-        CGContextRestoreGState(ctx);
-        
-    }
-    else if (layer == _scanFXlayer2) {
-        CGRect layerBounds = layer.bounds;
-        
-        CGColorSpaceRef myColorspace=CGColorSpaceCreateDeviceRGB();
-        size_t num_locations = 2;
-        CGFloat locations[2] = { 1.0, 0.0 };
-        CGFloat components[8] =	{ 0.0, 0.0, 0.0, 0.0,    176.0f/255.0f, 1.0f/255.0f, 36.0f/255.0f, 1.0 };
-        
-        CGGradientRef myGradient = CGGradientCreateWithColorComponents(myColorspace, components, locations, num_locations);
-        
-        CGPoint myStartPoint, myEndPoint;
-        myStartPoint.x = 0.0;
-        myStartPoint.y = 0.0;
-        myEndPoint.x = 0.0;
-        myEndPoint.y = 30.0;
-        CGContextDrawLinearGradient (ctx, myGradient, myStartPoint, myEndPoint, 0);
-        
-        CGContextSaveGState(ctx);
-        CGContextAddRect(ctx, CGRectMake(layerBounds.origin.x, layerBounds.origin.y, layerBounds.size.width, 1));
-        CGContextClip(ctx);
-        CGContextRestoreGState(ctx);
-    }
-    
-}
-
 // Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
 - (void)stopFinderMode
 {
@@ -411,15 +310,12 @@
     [_avCaptureSession stopRunning];
     
     _videoCaptureOutput = nil;
-    //_stillImageOutput = nil;
     
     [_captureVideoPreviewLayer removeFromSuperlayer];
     _captureVideoPreviewLayer = nil;
     
-    [_scanFXlayer removeFromSuperlayer];
+    [_scanFXlayer remove];
     _scanFXlayer = nil;
-    [_scanFXlayer2 removeFromSuperlayer];
-    _scanFXlayer2 = nil;
     
     NSLog(@"Stopped Finder mode.");
 }

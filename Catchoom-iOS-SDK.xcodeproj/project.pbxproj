@@ -19,6 +19,8 @@
 		D3E6E18D173C6AB0001D7BE2 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3E6E18C173C6AB0001D7BE2 /* ImageIO.framework */; };
 		D3E6E18F173C6ABC001D7BE2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3E6E18E173C6ABC001D7BE2 /* AVFoundation.framework */; };
 		D3E6E197173D0399001D7BE2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3E6E196173D0399001D7BE2 /* CoreMedia.framework */; };
+		D3E6E1A4173FD854001D7BE2 /* ScanFXLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D3E6E1A2173FD854001D7BE2 /* ScanFXLayer.h */; };
+		D3E6E1A5173FD854001D7BE2 /* ScanFXLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D3E6E1A3173FD854001D7BE2 /* ScanFXLayer.m */; };
 		F05F68EC1632AE9D00811C5C /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68E01632AE3700811C5C /* libRestKit.a */; };
 		F05F68EE1632AEB000811C5C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68ED1632AEB000811C5C /* CFNetwork.framework */; };
 		F05F68F01632AEBA00811C5C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68EF1632AEBA00811C5C /* CoreData.framework */; };
@@ -102,6 +104,8 @@
 		D3E6E18C173C6AB0001D7BE2 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		D3E6E18E173C6ABC001D7BE2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		D3E6E196173D0399001D7BE2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		D3E6E1A2173FD854001D7BE2 /* ScanFXLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanFXLayer.h; sourceTree = "<group>"; };
+		D3E6E1A3173FD854001D7BE2 /* ScanFXLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanFXLayer.m; sourceTree = "<group>"; };
 		F05F68D41632AE3700811C5C /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = RestKit/RestKit.xcodeproj; sourceTree = "<group>"; };
 		F05F68ED1632AEB000811C5C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		F05F68EF1632AEBA00811C5C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -140,6 +144,7 @@
 		D3477CDA173A8B0D002A4DAF /* Catchoom-iOS-SDK */ = {
 			isa = PBXGroup;
 			children = (
+				D3E6E1A1173FD839001D7BE2 /* ScanFXLayer */,
 				D3477CE0173A8B0D002A4DAF /* Catchoom-iOS-SDK.h */,
 				D3477CF1173A8B6C002A4DAF /* Supporting Files */,
 				D3477CDE173A8B0D002A4DAF /* CatchoomService.h */,
@@ -176,6 +181,15 @@
 				D3477CDB173A8B0D002A4DAF /* Catchoom-iOS-SDK-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D3E6E1A1173FD839001D7BE2 /* ScanFXLayer */ = {
+			isa = PBXGroup;
+			children = (
+				D3E6E1A2173FD854001D7BE2 /* ScanFXLayer.h */,
+				D3E6E1A3173FD854001D7BE2 /* ScanFXLayer.m */,
+			);
+			name = ScanFXLayer;
 			sourceTree = "<group>";
 		};
 		F05F68D51632AE3700811C5C /* Products */ = {
@@ -237,6 +251,7 @@
 				D3477CE6173A8B0D002A4DAF /* CatchoomSearchResponseItem.h in Headers */,
 				D3477CEB173A8B0D002A4DAF /* ImageHandler.h in Headers */,
 				D3477CED173A8B0D002A4DAF /* ImageTransformations.h in Headers */,
+				D3E6E1A4173FD854001D7BE2 /* ScanFXLayer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +356,7 @@
 				D3477CE9173A8B0D002A4DAF /* CatchoomService.m in Sources */,
 				D3477CEC173A8B0D002A4DAF /* ImageHandler.m in Sources */,
 				D3477CEE173A8B0D002A4DAF /* ImageTransformations.m in Sources */,
+				D3E6E1A5173FD854001D7BE2 /* ScanFXLayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
