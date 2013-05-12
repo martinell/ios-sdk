@@ -22,6 +22,8 @@
     AVCaptureVideoDataOutput *_videoCaptureOutput;
     AVCaptureSession *_avCaptureSession;
     AVCaptureVideoPreviewLayer *_captureVideoPreviewLayer;
+    CALayer *_scanFXlayer;
+    CALayer *_scanFXlayer2;
     int32_t _NumOfFramesCaptured;
     int32_t _searchRate;
 }
@@ -45,14 +47,14 @@
 //sets the new RKClient connection. Future library implementations for start up should go here
 - (void)beginServerConnection {
     
-
+    
     [RKClient clientWithBaseURL:[NSURL URLWithString:KMainUrl]];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityStatusChanged:)
                                                  name:RKReachabilityDidChangeNotification object:nil];
     
-
+    
 }
 - (void)reachabilityStatusChanged:(NSNotification *)aNotification {
     if ([[[RKClient sharedClient] reachabilityObserver] isReachabilityDetermined]
@@ -84,7 +86,7 @@
 }
 
 #pragma mark -
-#pragma mark - Check tokens connections 
+#pragma mark - Check tokens connections
 
 - (void)connect:(NSString *)token {
     
@@ -92,17 +94,17 @@
         token = @"";
     }
     __weak CatchoomService *currentService = self;
-
+    
     [[RKClient sharedClient] post:@"/timestamp" usingBlock:^(RKRequest *request) {
         
         RKParams* serverRequest = [RKParams params];
         [serverRequest setValue: token
                        forParam:@"token"];
-       
+        
         request.params = serverRequest;
         
         request.onDidLoadResponse = ^(RKResponse *response) {
-
+            
             [currentService didReceiveConnectResponse:response];
         };
         [request setOnDidFailLoadWithError:^(NSError *error){
@@ -116,15 +118,15 @@
             [currentService didFailLoadWithError:error];
         }];
         
-
+        
         
     }];
-
+    
 }
 
 //delegate callback for tokens answer
 - (void)didReceiveConnectResponse:(RKResponse *)response {
-
+    
     [self.delegate didReceiveConnectResponse:response];
 }
 
@@ -144,7 +146,7 @@
         if(newImage){
             request.method = RKRequestMethodPOST;
             
-                      
+            
             
             RKParams* imageParams = [RKParams params];
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -164,9 +166,9 @@
                 [currentService didFailLoadWithError:error];
             }];
             
-
+            
             request.onDidLoadResponse = ^(RKResponse *response) {
-
+                
                 NSArray *parsedResponse = [response parsedBody:NULL];
                 if([parsedResponse count] == 0){
                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"NO MATCH", @"")
@@ -186,8 +188,8 @@
                                                                   otherButtonTitles: nil];
                             [alert show];
                             
-                        } 
-
+                        }
+                        
                     }else {
                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"")
                                                                         message:NSLocalizedString(@"there has been an error while uploading the picture to the server, please try it again later.", @"")
@@ -198,7 +200,7 @@
                     }
                 }
                 [currentService didReceiveSearchResponse:parsedResponse];
-
+                
             };
             
         }
@@ -226,7 +228,7 @@
     
     // Create and Configure a Capture Session with Low preset = 192x144
     _avCaptureSession = [[AVCaptureSession alloc] init];
-    _avCaptureSession.sessionPreset = AVCaptureSessionPresetLow;
+    _avCaptureSession.sessionPreset = AVCaptureSessionPresetMedium;
     
     // Create and Configure the Device and Device Input
     AVCaptureDevice *avCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
@@ -236,17 +238,17 @@
     if (!avCaptureDeviceInput) {
         NSLog(@"ERROR: Couldn't create AVCaptureDeviceInput.");
     }
-    
-    if (![avCaptureDevice lockForConfiguration:&error]) {
-        NSLog(@"ERROR: Couldn't lock camera device configuration.");
-    }
-    if ([avCaptureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
-        //CGPoint autofocusPoint = CGPointMake(0.5f, 0.5f);
-        //[avCaptureDevice setFocusPointOfInterest:autofocusPoint];
-        [avCaptureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
-    }
-    [avCaptureDevice unlockForConfiguration];
-    
+    /*
+     if (![avCaptureDevice lockForConfiguration:&error]) {
+     NSLog(@"ERROR: Couldn't lock camera device configuration.");
+     }
+     if ([avCaptureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+     //CGPoint autofocusPoint = CGPointMake(0.5f, 0.5f);
+     //[avCaptureDevice setFocusPointOfInterest:autofocusPoint];
+     [avCaptureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+     }
+     [avCaptureDevice unlockForConfiguration];
+     */
     
     if ( [_avCaptureSession canAddInput:avCaptureDeviceInput] )
     {
@@ -260,7 +262,7 @@
     AVCaptureConnection *videoCaptureConnection = [_videoCaptureOutput connectionWithMediaType:AVMediaTypeVideo];
     [videoCaptureConnection setVideoMinFrameDuration:CMTimeMake(1, MINVIDEOFRAMERATE)];
     [videoCaptureConnection setVideoMaxFrameDuration:CMTimeMake(1, MAXVIDEOFRAMERATE)];
-     
+    
     if ( [_avCaptureSession canAddOutput:_videoCaptureOutput] )
     {
         [_avCaptureSession addOutput:_videoCaptureOutput];
@@ -274,11 +276,59 @@
         [_captureVideoPreviewLayer setVideoGravity : AVLayerVideoGravityResizeAspectFill];
         [_captureVideoPreviewLayer setBackgroundColor : [[UIColor blackColor] CGColor]];
         
-        [rootLayer insertSublayer:_captureVideoPreviewLayer atIndex:1];
+        //[rootLayer insertSublayer:_captureVideoPreviewLayer atIndex:1];
         
         [rootLayer setMasksToBounds:YES];
         [_captureVideoPreviewLayer setFrame:[rootLayer bounds]];
         [rootLayer addSublayer:_captureVideoPreviewLayer];
+        
+        // Optional: add layer to draw scanning effect
+        _scanFXlayer = [CALayer layer];
+        [_scanFXlayer setFrame:[rootLayer bounds]];
+        [_scanFXlayer setDelegate:self];
+        [_scanFXlayer setNeedsDisplay];
+        
+        /*CABasicAnimation* animation = [CABasicAnimation animationWithKeyPath:@"transform.translation"];
+         [animation setDuration:1.5];
+         [animation setRepeatCount:INT_MAX];
+         [animation setFromValue:[NSNumber numberWithInt:0] ];
+         CGRect layerBounds = rootLayer.bounds;
+         [animation setToValue:[NSNumber numberWithInt:layerBounds.size.width]];
+         */
+        
+        CAKeyframeAnimation *animationLeft2Right = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.x"];
+        [animationLeft2Right setDuration:2.0];
+        [animationLeft2Right setRepeatCount:INT_MAX];
+        
+        NSMutableArray *values = [NSMutableArray array];
+        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.x]];
+        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.x+rootLayer.bounds.size.width]];
+        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.x]];
+        [animationLeft2Right setValues:values];
+        
+        [_scanFXlayer addAnimation:animationLeft2Right forKey:nil];
+        
+        
+        _scanFXlayer2 = [CALayer layer];
+        [_scanFXlayer2 setFrame:[rootLayer bounds]];
+        [_scanFXlayer2 setDelegate:self];
+        [_scanFXlayer2 setNeedsDisplay];
+        
+        CAKeyframeAnimation *animationBottom2Top = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.y"];
+        [animationBottom2Top setDuration:2.0];
+        [animationBottom2Top setRepeatCount:INT_MAX];
+        
+        [values removeAllObjects];
+        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.y]];
+        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.y + rootLayer.bounds.size.height]];
+        [values addObject:[NSNumber numberWithInt:rootLayer.bounds.origin.y]];
+        [animationBottom2Top setValues:values];
+        
+        [_scanFXlayer2 addAnimation:animationBottom2Top forKey:nil];
+        
+        //[rootLayer addSublayer:_scanFXlayer];
+        [rootLayer addSublayer:_scanFXlayer2];
+        
     }
     
     dispatch_queue_t queue = dispatch_queue_create("SearchFinderModeQueue", NULL);
@@ -287,7 +337,7 @@
     
     _searchRate = MINVIDEOFRAMERATE/searchesPerSecond;
     
-    _NumOfFramesCaptured = 0;
+    _NumOfFramesCaptured = _searchRate/3;
     
     // Start capturing
     NSLog(@"Starting Finder mode.");
@@ -295,10 +345,68 @@
     
 }
 
+- (void) drawLayer:(CALayer*)layer inContext:(CGContextRef) ctx
+{
+    if (layer == _scanFXlayer) {
+        CGRect layerBounds = layer.bounds;
+        /*
+         
+         CGContextMoveToPoint(ctx, layerBounds.origin.x, layerBounds.origin.y);
+         CGContextAddLineToPoint(ctx, layerBounds.origin.x, layerBounds.origin.y + layerBounds.size.height);
+         
+         CGContextStrokePath(ctx);
+         
+         CGRect layerBounds = layer.bounds;*/
+        
+        CGColorSpaceRef myColorspace=CGColorSpaceCreateDeviceRGB();
+        size_t num_locations = 2;
+        CGFloat locations[2] = { 1.0, 0.0 };
+        CGFloat components[8] =	{ 0.0, 0.0, 0.0, 0.0, 176.0f/255.0f, 1.0f/255.0f, 36.0f/255.0f, 1.0 };
+        
+        CGGradientRef myGradient = CGGradientCreateWithColorComponents(myColorspace, components, locations, num_locations);
+        
+        CGPoint myStartPoint, myEndPoint;
+        myStartPoint.x = 0.0;
+        myStartPoint.y = 0.0;
+        myEndPoint.x = 30.0;
+        myEndPoint.y = 0.0;
+        CGContextDrawLinearGradient (ctx, myGradient, myStartPoint, myEndPoint, 0);
+        
+        CGContextSaveGState(ctx);
+        CGContextAddRect(ctx, CGRectMake(layerBounds.origin.x, layerBounds.origin.y, 1, layerBounds.size.height));
+        CGContextClip(ctx);
+        CGContextRestoreGState(ctx);
+        
+    }
+    else if (layer == _scanFXlayer2) {
+        CGRect layerBounds = layer.bounds;
+        
+        CGColorSpaceRef myColorspace=CGColorSpaceCreateDeviceRGB();
+        size_t num_locations = 2;
+        CGFloat locations[2] = { 1.0, 0.0 };
+        CGFloat components[8] =	{ 0.0, 0.0, 0.0, 0.0,    176.0f/255.0f, 1.0f/255.0f, 36.0f/255.0f, 1.0 };
+        
+        CGGradientRef myGradient = CGGradientCreateWithColorComponents(myColorspace, components, locations, num_locations);
+        
+        CGPoint myStartPoint, myEndPoint;
+        myStartPoint.x = 0.0;
+        myStartPoint.y = 0.0;
+        myEndPoint.x = 0.0;
+        myEndPoint.y = 30.0;
+        CGContextDrawLinearGradient (ctx, myGradient, myStartPoint, myEndPoint, 0);
+        
+        CGContextSaveGState(ctx);
+        CGContextAddRect(ctx, CGRectMake(layerBounds.origin.x, layerBounds.origin.y, layerBounds.size.width, 1));
+        CGContextClip(ctx);
+        CGContextRestoreGState(ctx);
+    }
+    
+}
+
 // Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
 - (void)stopFinderMode
 {
-
+    
     // Stop Camera Capture
     [_avCaptureSession stopRunning];
     
@@ -307,6 +415,11 @@
     
     [_captureVideoPreviewLayer removeFromSuperlayer];
     _captureVideoPreviewLayer = nil;
+    
+    [_scanFXlayer removeFromSuperlayer];
+    _scanFXlayer = nil;
+    [_scanFXlayer2 removeFromSuperlayer];
+    _scanFXlayer2 = nil;
     
     NSLog(@"Stopped Finder mode.");
 }
@@ -359,8 +472,8 @@
 }
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput
-         didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-                fromConnection:(AVCaptureConnection *)connection {
+didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+       fromConnection:(AVCaptureConnection *)connection {
     
     if (_NumOfFramesCaptured == 0) {
         UIImage *resultUIImage = [self imageFromSampleBuffer:sampleBuffer];
@@ -377,7 +490,7 @@
     }
     //NSLog(@"_NumOfFramesCaptured: %d",_NumOfFramesCaptured);
     _NumOfFramesCaptured--;
-
+    
 }
 
 // Performs a search call for an image captured in Finder Mode.
@@ -385,6 +498,7 @@
 - (void)searchFinderMode:(NSData *)imageNSData
 {
     __weak CatchoomService *currentService = self;
+    
     //create post call to server
     [[RKClient sharedClient] post:@"/search" usingBlock:^(RKRequest *request) {
         if(imageNSData){
@@ -444,6 +558,10 @@
         }
         
     }];
+    /*
+     NSArray *parsedResponse = [[NSArray alloc]init];
+     [currentService didReceiveSearchResponse:parsedResponse];
+     */
 }
 
 #pragma mark -
@@ -459,15 +577,15 @@
     }
     
     [response enumerateObjectsUsingBlock:^(NSDictionary *obj, NSUInteger idx, BOOL *stop) {
-               CatchoomSearchResponseItem *model = [[CatchoomSearchResponseItem alloc] init];
-               model.itemId = [obj valueForKey:@"item_id"];
-               model.score = [obj valueForKey:@"score"];
-               model.thumbnail = [[obj valueForKey:@"metadata"]valueForKey:@"thumbnail"];
-               model.url = [[obj valueForKey:@"metadata"]valueForKey:@"url"];
-               model.iconName = [[obj valueForKey:@"metadata"] valueForKey:@"name"];
-               [_parsedElements addObject:model];
+        CatchoomSearchResponseItem *model = [[CatchoomSearchResponseItem alloc] init];
+        model.itemId = [obj valueForKey:@"item_id"];
+        model.score = [obj valueForKey:@"score"];
+        model.thumbnail = [[obj valueForKey:@"metadata"]valueForKey:@"thumbnail"];
+        model.url = [[obj valueForKey:@"metadata"]valueForKey:@"url"];
+        model.iconName = [[obj valueForKey:@"metadata"] valueForKey:@"name"];
+        [_parsedElements addObject:model];
     }];
-
+    
     [self.delegate didReceiveSearchResponse:_parsedElements];
 }
 
