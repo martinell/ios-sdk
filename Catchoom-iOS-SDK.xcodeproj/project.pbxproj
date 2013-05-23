@@ -11,7 +11,6 @@
 		D3477CE7173A8B0D002A4DAF /* CatchoomSearchResponseItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D3477CDD173A8B0D002A4DAF /* CatchoomSearchResponseItem.m */; };
 		D3477CE8173A8B0D002A4DAF /* CatchoomService.h in Headers */ = {isa = PBXBuildFile; fileRef = D3477CDE173A8B0D002A4DAF /* CatchoomService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D3477CE9173A8B0D002A4DAF /* CatchoomService.m in Sources */ = {isa = PBXBuildFile; fileRef = D3477CDF173A8B0D002A4DAF /* CatchoomService.m */; };
-		D3477CEB173A8B0D002A4DAF /* ImageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = D3477CE1173A8B0D002A4DAF /* ImageHandler.h */; };
 		D3477CEC173A8B0D002A4DAF /* ImageHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = D3477CE2173A8B0D002A4DAF /* ImageHandler.m */; };
 		D3477CED173A8B0D002A4DAF /* ImageTransformations.h in Headers */ = {isa = PBXBuildFile; fileRef = D3477CE3173A8B0D002A4DAF /* ImageTransformations.h */; };
 		D3477CEE173A8B0D002A4DAF /* ImageTransformations.m in Sources */ = {isa = PBXBuildFile; fileRef = D3477CE4173A8B0D002A4DAF /* ImageTransformations.m */; };
@@ -21,6 +20,7 @@
 		D3E6E197173D0399001D7BE2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3E6E196173D0399001D7BE2 /* CoreMedia.framework */; };
 		D3E6E1A4173FD854001D7BE2 /* ScanFXLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D3E6E1A2173FD854001D7BE2 /* ScanFXLayer.h */; };
 		D3E6E1A5173FD854001D7BE2 /* ScanFXLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D3E6E1A3173FD854001D7BE2 /* ScanFXLayer.m */; };
+		D3F7A628174EDAAA00C1336D /* ImageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = D3477CE1173A8B0D002A4DAF /* ImageHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F05F68EC1632AE9D00811C5C /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68E01632AE3700811C5C /* libRestKit.a */; };
 		F05F68EE1632AEB000811C5C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68ED1632AEB000811C5C /* CFNetwork.framework */; };
 		F05F68F01632AEBA00811C5C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F05F68EF1632AEBA00811C5C /* CoreData.framework */; };
@@ -248,8 +248,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D3477CE8173A8B0D002A4DAF /* CatchoomService.h in Headers */,
+				D3F7A628174EDAAA00C1336D /* ImageHandler.h in Headers */,
 				D3477CE6173A8B0D002A4DAF /* CatchoomSearchResponseItem.h in Headers */,
-				D3477CEB173A8B0D002A4DAF /* ImageHandler.h in Headers */,
 				D3477CED173A8B0D002A4DAF /* ImageTransformations.h in Headers */,
 				D3E6E1A4173FD854001D7BE2 /* ScanFXLayer.h in Headers */,
 			);

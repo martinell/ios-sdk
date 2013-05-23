@@ -16,7 +16,7 @@
 @property (nonatomic) NSString *score;
 @property (nonatomic) NSString *url;
 @property (nonatomic) NSString *imageId;
-@property (nonatomic) NSData *iconImage;
+@property (nonatomic) NSData   *iconImage;
 @property (nonatomic) NSString *iconName;
 
 

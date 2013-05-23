@@ -10,11 +10,23 @@
 
 @implementation ScanFXLayer
 
-- (id) initWithBounds:(CGRect)bounds
+- (id) initWithBounds:(CGRect)bounds withSession:(AVCaptureSession*)avCaptureSession
 {
     self = [super init];
     if (self) {
         [self setFrame:bounds];
+        
+        _captureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:avCaptureSession];
+        [_captureVideoPreviewLayer setVideoGravity : AVLayerVideoGravityResizeAspect];
+        [_captureVideoPreviewLayer setBackgroundColor : [[UIColor blackColor] CGColor]];
+        
+        [_captureVideoPreviewLayer setFrame:[self bounds]];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            [_captureVideoPreviewLayer setOrientation:AVCaptureVideoOrientationLandscapeRight];
+        }
+        
+        [self addSublayer:_captureVideoPreviewLayer];
+        
         
         _left2RightLayer = [CALayer layer];
         [_left2RightLayer setFrame:bounds];
@@ -68,6 +80,11 @@
 
 - (void)remove
 {
+    if (_captureVideoPreviewLayer != nil) {
+        [_captureVideoPreviewLayer removeFromSuperlayer];
+        _captureVideoPreviewLayer = nil;
+    }
+    
     if (_left2RightLayer != nil) {
         [_left2RightLayer removeFromSuperlayer];
         _left2RightLayer = nil;

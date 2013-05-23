@@ -10,12 +10,14 @@
 #import <Foundation/Foundation.h>
 #import "CatchoomSearchResponseItem.h"
 #import <AVFoundation/AVFoundation.h>
+#import "ImageHandler.h"
 
 @protocol CatchoomServiceProtocol;
 
 @interface CatchoomService : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property (nonatomic, weak) id <CatchoomServiceProtocol> delegate;
+@property BOOL _isFinderModeON;
 
 + (CatchoomService *)sharedCatchoom;
 
@@ -26,31 +28,20 @@
 - (void)connect:(NSString *)token;
 
 // Performs a search call for an image taken by the user.
+// Collection Token must be set previously with connect or a previous call to search:withToken
 // Answers with a delegate didReceiveSearchResponse: or didFailLoadWithError:
 - (void)search:(UIImage *)image;
 
-//send image with specific token. Sets the token as the default one and creates the normal callback.
+// Performs a search call with a specific token. Sets the token as the default one and calls search.
+// Answers with a delegate didReceiveSearchResponse: or didFailLoadWithError:
 - (void)search:(UIImage*)image withToken:(NSString *)token;
 
 /// Finder Mode: performs a continuous scan of information in the viewfinder.
-
 // Creates an AVCaptureSession suitable for Finder Mode.
 - (void)startFinderMode:(int32_t)searchesPerSecond withPreview:(UIView*)mainView;
 
 // Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
 - (void)stopFinderMode;
-
-/*
-// Selector that captures an image triggered by theTimer in Finder Mode and sends it asynchronously.
-- (void)captureImageFinderMode:(NSTimer*)theTimer;
-
-// Performs a search call for an image captured in Finder Mode.
-// Answers with a delegate didReceiveSearchResponse: or didFailLoadWithError:
-- (void)searchFinderMode:(NSData *)imageNSData;
-*/
-
-// block helper to download a image from a URL (handy to create a lazy load).
-void UIImageFromURL( NSURL * URL, void (^imageBlock)(UIImage * image), void (^errorBlock)(void));
 
 @end
 

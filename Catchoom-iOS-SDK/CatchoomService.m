@@ -9,40 +9,36 @@
 
 #import "CatchoomService.h"
 #define KMainUrl @"https://r.catchoom.com/v0"
-#import "ImageHandler.h"
 #import <AVFoundation/AVFoundation.h>
 #import <ImageIO/CGImageProperties.h>
 #import "ScanFXLayer.h"
-
-#define MINVIDEOFRAMERATE 30
-#define MAXVIDEOFRAMERATE 15
 
 @interface CatchoomService ()
 {
     NSMutableArray *_parsedElements;
     AVCaptureVideoDataOutput *_videoCaptureOutput;
     AVCaptureSession *_avCaptureSession;
-    AVCaptureVideoPreviewLayer *_captureVideoPreviewLayer;
+
     ScanFXLayer *_scanFXlayer;
+    
     int32_t _NumOfFramesCaptured;
     int32_t _searchRate;
+    BOOL _isFinderModeON;
 }
 
-// Selector that captures an image triggered by theTimer in Finder Mode and sends it asynchronously.
-- (void)captureImageFinderMode:(NSTimer*)theTimer;
-
-// Performs a search call for an image captured in Finder Mode.
+// Performs a search call for an image stored in imageNSData that is formatted for best performance.
 // Answers with a delegate didReceiveSearchResponse: or didFailLoadWithError:
-- (void)searchFinderMode:(NSData *)imageNSData;
-
-// Helper function to transform a buffer into a UIImage
-- (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer;
+- (void)searchWithData:(NSData *)imageNSData;
 
 @end
 
 
 @implementation CatchoomService
 @synthesize delegate = _delegate;
+@synthesize _isFinderModeON;
+
+#pragma mark -
+#pragma mark - RESTKit connection management
 
 //sets the new RKClient connection. Future library implementations for start up should go here
 - (void)beginServerConnection {
@@ -82,11 +78,12 @@
     dispatch_once(&once, ^ { sharedCatchoom = [[CatchoomService alloc] init];
         [sharedCatchoom beginServerConnection];
     });
+
     return sharedCatchoom;
 }
 
 #pragma mark -
-#pragma mark - Check tokens connections
+#pragma mark - Check tokens and server connectivity
 
 - (void)connect:(NSString *)token {
     
@@ -124,7 +121,7 @@
     
 }
 
-//delegate callback for tokens answer
+
 - (void)didReceiveConnectResponse:(RKResponse *)response {
     
     [self.delegate didReceiveConnectResponse:response];
@@ -138,77 +135,9 @@
 
 -(void)search:(UIImage*)image
 {
-    
-    __weak CatchoomService *currentService = self;
-    //create post call to server
-    [[RKClient sharedClient] post:@"/search" usingBlock:^(RKRequest *request) {
-        NSData *newImage = [ImageHandler prepareNSDataFromUIImage: image];
-        if(newImage){
-            request.method = RKRequestMethodPOST;
-            
-            
-            
-            RKParams* imageParams = [RKParams params];
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            [imageParams setData:newImage MIMEType:@"image/jpg" forParam:@"image"];
-            [imageParams setValue: [defaults stringForKey:@"token"]
-                         forParam:@"token"];
-            request.params = imageParams;
-            //handle error during connection
-            [request setOnDidFailLoadWithError:^(NSError *error){
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ERROR" ,@"")
-                                                                message:NSLocalizedString(@"error while uploading the image, something went wrong", @"")
-                                                               delegate:self
-                                                      cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                      otherButtonTitles: nil];
-                [alert show];
-                
-                [currentService didFailLoadWithError:error];
-            }];
-            
-            
-            request.onDidLoadResponse = ^(RKResponse *response) {
-                
-                NSArray *parsedResponse = [response parsedBody:NULL];
-                if([parsedResponse count] == 0){
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"NO MATCH", @"")
-                                                                    message:NSLocalizedString(@"there is no object in the collection that matches with any in the picture", @"")
-                                                                   delegate:self
-                                                          cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                          otherButtonTitles: nil];
-                    [alert show];
-                }else{
-                    if(response.statusCode == 200){
-                        
-                        if([[parsedResponse lastObject ]valueForKey:@"message"]){
-                            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Token Invalid", @"")
-                                                                            message:[parsedResponse valueForKey:@"message"]
-                                                                           delegate:self
-                                                                  cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                                  otherButtonTitles: nil];
-                            [alert show];
-                            
-                        }
-                        
-                    }else {
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"")
-                                                                        message:NSLocalizedString(@"there has been an error while uploading the picture to the server, please try it again later.", @"")
-                                                                       delegate:self
-                                                              cancelButtonTitle:NSLocalizedString(@"OK",@"")
-                                                              otherButtonTitles: nil];
-                        [alert show];
-                    }
-                }
-                [currentService didReceiveSearchResponse:parsedResponse];
-                
-            };
-            
-        }
-        
-    }];
+    NSData *newImage = [ImageHandler prepareNSDataFromUIImage: image];
+    [self searchWithData:newImage];
 }
-
-//send image with specific token. Sets the token as the default one and creates the normal callback.
 
 - (void)search:(UIImage*)image withToken:(NSString *)token {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -216,182 +145,8 @@
     [self search:image];
 }
 
-#pragma mark -
-#pragma mark - Finder Mode
-// Creates an AVCaptureSession suitable for Finder Mode.
-- (void)startFinderMode:(int32_t)searchesPerSecond withPreview:(UIView*)mainView
-{
-    if  (searchesPerSecond <= 0)
-    {
-        searchesPerSecond = 2;
-    }
-    
-    // Create and Configure a Capture Session with Low preset = 192x144
-    _avCaptureSession = [[AVCaptureSession alloc] init];
-    _avCaptureSession.sessionPreset = AVCaptureSessionPresetMedium;
-    
-    // Create and Configure the Device and Device Input
-    AVCaptureDevice *avCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    
-    NSError *error = nil;
-    AVCaptureDeviceInput *avCaptureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:avCaptureDevice error:&error];
-    if (!avCaptureDeviceInput) {
-        NSLog(@"ERROR: Couldn't create AVCaptureDeviceInput.");
-    }
-    /*
-     if (![avCaptureDevice lockForConfiguration:&error]) {
-     NSLog(@"ERROR: Couldn't lock camera device configuration.");
-     }
-     if ([avCaptureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
-     //CGPoint autofocusPoint = CGPointMake(0.5f, 0.5f);
-     //[avCaptureDevice setFocusPointOfInterest:autofocusPoint];
-     [avCaptureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
-     }
-     [avCaptureDevice unlockForConfiguration];
-     */
-    
-    if ( [_avCaptureSession canAddInput:avCaptureDeviceInput] )
-    {
-        [_avCaptureSession addInput:avCaptureDeviceInput];
-    }
-    
-    // Create and Configure the Data Output
-    _videoCaptureOutput = [[AVCaptureVideoDataOutput alloc] init];
-    _videoCaptureOutput.videoSettings = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
-    _videoCaptureOutput.alwaysDiscardsLateVideoFrames = YES;
-    AVCaptureConnection *videoCaptureConnection = [_videoCaptureOutput connectionWithMediaType:AVMediaTypeVideo];
-    [videoCaptureConnection setVideoMinFrameDuration:CMTimeMake(1, MINVIDEOFRAMERATE)];
-    [videoCaptureConnection setVideoMaxFrameDuration:CMTimeMake(1, MAXVIDEOFRAMERATE)];
-    
-    if ( [_avCaptureSession canAddOutput:_videoCaptureOutput] )
-    {
-        [_avCaptureSession addOutput:_videoCaptureOutput];
-    }
-    
-    if (mainView != nil) {
-        // Add video preview
-        CALayer *rootLayer = mainView.layer;
-        
-        _captureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_avCaptureSession];
-        [_captureVideoPreviewLayer setVideoGravity : AVLayerVideoGravityResizeAspectFill];
-        [_captureVideoPreviewLayer setBackgroundColor : [[UIColor blackColor] CGColor]];
-        
-        //[rootLayer insertSublayer:_captureVideoPreviewLayer atIndex:1];
-        
-        [rootLayer setMasksToBounds:YES];
-        [_captureVideoPreviewLayer setFrame:[rootLayer bounds]];
-        [rootLayer addSublayer:_captureVideoPreviewLayer];
-        
-        //[Optional] add layer to draw scanning effect
-        _scanFXlayer = [[ScanFXLayer alloc] initWithBounds:[rootLayer bounds]];
-        [rootLayer addSublayer:_scanFXlayer];
-        
-    }
-    
-    dispatch_queue_t queue = dispatch_queue_create("SearchFinderModeQueue", NULL);
-    [_videoCaptureOutput setSampleBufferDelegate:self queue:queue];
-    dispatch_release(queue);
-    
-    _searchRate = MINVIDEOFRAMERATE/searchesPerSecond;
-    
-    _NumOfFramesCaptured = _searchRate/3;
-    
-    // Start capturing
-    NSLog(@"Starting Finder mode.");
-    [_avCaptureSession startRunning];
-    
-}
 
-// Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
-- (void)stopFinderMode
-{
-    
-    // Stop Camera Capture
-    [_avCaptureSession stopRunning];
-    
-    _videoCaptureOutput = nil;
-    
-    [_captureVideoPreviewLayer removeFromSuperlayer];
-    _captureVideoPreviewLayer = nil;
-    
-    [_scanFXlayer remove];
-    _scanFXlayer = nil;
-    
-    NSLog(@"Stopped Finder mode.");
-}
-
-- (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer
-{
-    
-    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    // Lock the base address of the pixel buffer.
-    CVPixelBufferLockBaseAddress(imageBuffer,0);
-    
-    // Get the number of bytes per row for the pixel buffer.
-    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
-    // Get the pixel buffer width and height.
-    size_t width = CVPixelBufferGetWidth(imageBuffer);
-    size_t height = CVPixelBufferGetHeight(imageBuffer);
-    
-    // Create a device-dependent RGB color space.
-    static CGColorSpaceRef colorSpace = NULL;
-    if (colorSpace == NULL) {
-        colorSpace = CGColorSpaceCreateDeviceRGB();
-        if (colorSpace == NULL) {
-            // Handle the error appropriately.
-            return nil;
-        }
-    }
-    
-    // Get the base address of the pixel buffer.
-    void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
-    // Get the data size for contiguous planes of the pixel buffer.
-    size_t bufferSize = CVPixelBufferGetDataSize(imageBuffer);
-    
-    // Create a Quartz direct-access data provider that uses data we supply.
-    CGDataProviderRef dataProvider =
-    CGDataProviderCreateWithData(NULL, baseAddress, bufferSize, NULL);
-    // Create a bitmap image from data supplied by the data provider.
-    CGImageRef cgImage =
-    CGImageCreate(width, height, 8, 32, bytesPerRow,
-                  colorSpace, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little,
-                  dataProvider, NULL, true, kCGRenderingIntentDefault);
-    CGDataProviderRelease(dataProvider);
-    
-    // Create and return an image object to represent the Quartz image.
-    UIImage *image = [UIImage imageWithCGImage:cgImage];
-    CGImageRelease(cgImage);
-    
-    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-    
-    return image;
-}
-
-- (void)captureOutput:(AVCaptureOutput *)captureOutput
-didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-       fromConnection:(AVCaptureConnection *)connection {
-    
-    if (_NumOfFramesCaptured == 0) {
-        UIImage *resultUIImage = [self imageFromSampleBuffer:sampleBuffer];
-        NSData *imageData = UIImageJPEGRepresentation(resultUIImage, 0.75);
-        
-        // Send image to CRS asynchronously
-        dispatch_queue_t backgroundQueue;
-        backgroundQueue = dispatch_queue_create("com.catchoom.catchoom.background", NULL);
-        dispatch_async(backgroundQueue, ^(void) {
-            [self searchFinderMode:imageData];
-        });
-        dispatch_release(backgroundQueue);
-        _NumOfFramesCaptured = _searchRate;
-    }
-    //NSLog(@"_NumOfFramesCaptured: %d",_NumOfFramesCaptured);
-    _NumOfFramesCaptured--;
-    
-}
-
-// Performs a search call for an image captured in Finder Mode.
-// Answers with a delegate didReceiveSearchResponse: or didFailLoadWithError:
-- (void)searchFinderMode:(NSData *)imageNSData
+- (void)searchWithData:(NSData *)imageNSData
 {
     __weak CatchoomService *currentService = self;
     
@@ -454,10 +209,120 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
         
     }];
-    /*
-     NSArray *parsedResponse = [[NSArray alloc]init];
-     [currentService didReceiveSearchResponse:parsedResponse];
-     */
+    
+}
+
+#pragma mark -
+#pragma mark - Finder Mode
+
+#define MAXVIDEOFRAMERATE 30
+#define MINVIDEOFRAMERATE 15
+
+// Creates an AVCaptureSession suitable for Finder Mode.
+- (void)startFinderMode:(int32_t)searchesPerSecond withPreview:(UIView*)mainView
+{
+    
+    if  (searchesPerSecond <= 0)
+    {
+        searchesPerSecond = 2;
+    }
+    
+    // Create and Configure a Capture Session with Low preset = 192x144
+    _avCaptureSession = [[AVCaptureSession alloc] init];
+    _avCaptureSession.sessionPreset = AVCaptureSessionPresetMedium;
+    
+    // Create and Configure the Device and Device Input
+    AVCaptureDevice *avCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    
+    NSError *error = nil;
+    AVCaptureDeviceInput *avCaptureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:avCaptureDevice error:&error];
+    if (!avCaptureDeviceInput) {
+        NSLog(@"ERROR: Couldn't create AVCaptureDeviceInput.");
+    }
+    
+    if ( [_avCaptureSession canAddInput:avCaptureDeviceInput] )
+    {
+        [_avCaptureSession addInput:avCaptureDeviceInput];
+    }
+    
+    // Create and Configure the Data Output
+    _videoCaptureOutput = [[AVCaptureVideoDataOutput alloc] init];
+    _videoCaptureOutput.videoSettings = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
+    _videoCaptureOutput.alwaysDiscardsLateVideoFrames = YES;
+    
+    if ( [_avCaptureSession canAddOutput:_videoCaptureOutput] )
+    {
+        [_avCaptureSession addOutput:_videoCaptureOutput];
+    }
+    
+    AVCaptureConnection *videoCaptureConnection = [_videoCaptureOutput connectionWithMediaType:AVMediaTypeVideo];
+    [videoCaptureConnection setVideoMinFrameDuration:CMTimeMake(1, MAXVIDEOFRAMERATE)];
+    [videoCaptureConnection setVideoMaxFrameDuration:CMTimeMake(1, MINVIDEOFRAMERATE)];
+    
+    //[Optional] add layer to draw scanning effect
+    if (mainView != nil) {
+
+        CALayer *rootLayer = mainView.layer;
+        [rootLayer setMasksToBounds:YES];
+        
+        _scanFXlayer = [[ScanFXLayer alloc] initWithBounds:[rootLayer bounds] withSession:_avCaptureSession];
+        
+        [rootLayer addSublayer:_scanFXlayer];
+        
+    }
+    
+    dispatch_queue_t queue = dispatch_queue_create("SearchFinderModeQueue", NULL);
+    [_videoCaptureOutput setSampleBufferDelegate:self queue:queue];
+    dispatch_release(queue);
+    
+    // Setup FinderMode rate
+    _searchRate = MAXVIDEOFRAMERATE/searchesPerSecond;
+    _NumOfFramesCaptured = _searchRate/3; // shortens the time until the first image is sent
+    
+    // Start capturing
+    NSLog(@"Starting Finder mode.");
+    _isFinderModeON = TRUE;
+    [_avCaptureSession startRunning];
+    
+}
+
+// Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
+- (void)stopFinderMode
+{
+    if (_isFinderModeON) {
+        _isFinderModeON = FALSE;
+        
+        // Stop Camera Capture
+        [_avCaptureSession stopRunning];
+        
+        _videoCaptureOutput = nil;
+        
+        [_scanFXlayer remove];
+        _scanFXlayer = nil;
+        
+        NSLog(@"Stopped Finder mode.");
+    }
+}
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput
+didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+       fromConnection:(AVCaptureConnection *)connection {
+    
+    if (_NumOfFramesCaptured == 0 && _isFinderModeON) {
+        UIImage *resultUIImage = [ImageHandler imageFromSampleBuffer:sampleBuffer];
+        NSData *imageData = UIImageJPEGRepresentation(resultUIImage, 0.75);
+        
+        // Send image to CRS asynchronously
+        dispatch_queue_t backgroundQueue;
+        backgroundQueue = dispatch_queue_create("com.catchoom.catchoom.background", NULL);
+        dispatch_async(backgroundQueue, ^(void) {
+            [self searchWithData:imageData];
+        });
+        dispatch_release(backgroundQueue);
+        _NumOfFramesCaptured = _searchRate;
+    }
+    _NumOfFramesCaptured--;
+    
 }
 
 #pragma mark -
@@ -468,9 +333,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)didReceiveSearchResponse:(NSArray *)response {
     if (_parsedElements == nil) {
         _parsedElements = [NSMutableArray array];
-    }else{
+    }else {
         [_parsedElements removeAllObjects];
     }
+    
     
     [response enumerateObjectsUsingBlock:^(NSDictionary *obj, NSUInteger idx, BOOL *stop) {
         CatchoomSearchResponseItem *model = [[CatchoomSearchResponseItem alloc] init];
@@ -482,6 +348,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [_parsedElements addObject:model];
     }];
     
+    
     [self.delegate didReceiveSearchResponse:_parsedElements];
 }
 
@@ -491,31 +358,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if([self.delegate respondsToSelector:@selector(didFailLoadWithError:)]){
         [self.delegate didFailLoadWithError:error];
     }
-}
-
-
-
-#pragma mark -
-#pragma mark - block converted to a method to download the images in background
-//this snippet of code is a method that will download the icon image using different threads
-//and in the background. very usefull snipped with blocks and GCD
-
-void UIImageFromURL( NSURL * URL, void (^imageBlock)(UIImage * image), void (^errorBlock)(void) )
-{
-    dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^(void)
-                   {
-                       NSData * data = [[NSData alloc] initWithContentsOfURL:URL] ;
-                       UIImage * image = [[UIImage alloc] initWithData:data] ;
-                       dispatch_async( dispatch_get_main_queue(), ^(void){
-                           if( image != nil )
-                           {
-                               imageBlock( image );
-                           } else {
-                               errorBlock();
-                           }
-                       });
-                       
-                   });
 }
 
 

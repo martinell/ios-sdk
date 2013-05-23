@@ -9,6 +9,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface ImageHandler : NSObject
 
@@ -18,4 +19,9 @@
  */
 + (NSData *)prepareNSDataFromUIImage: (UIImage*)image;
 
+// Helper function to transform a buffer into a UIImage
++ (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer;
+
+// block helper to download a image from a URL (handy to create a lazy load).
+void UIImageFromURL( NSURL * URL, void (^imageBlock)(UIImage * image), void (^errorBlock)(void));
 @end
