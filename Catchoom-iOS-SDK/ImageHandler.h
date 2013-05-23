@@ -20,7 +20,7 @@
 + (NSData *)prepareNSDataFromUIImage: (UIImage*)image;
 
 // Helper function to transform a buffer into a UIImage
-+ (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer;
++ (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer andScaling:(CGFloat)scale;
 
 // block helper to download a image from a URL (handy to create a lazy load).
 void UIImageFromURL( NSURL * URL, void (^imageBlock)(UIImage * image), void (^errorBlock)(void));

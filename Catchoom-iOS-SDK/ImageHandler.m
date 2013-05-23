@@ -21,7 +21,7 @@
     return UIImageJPEGRepresentation( img , 0.65 );
 }
 
-+ (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer
++ (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer andScaling:(CGFloat)scale
 {
     
     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -39,7 +39,12 @@
     if (colorSpace == NULL) {
         colorSpace = CGColorSpaceCreateDeviceRGB();
         if (colorSpace == NULL) {
-            // Handle the error appropriately.
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ERROR" ,@"")
+                                                            message:@"Internal SDK error."
+                                                           delegate:self
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                                  otherButtonTitles: nil];
+            [alert show];
             return nil;
         }
     }
@@ -60,7 +65,8 @@
     CGDataProviderRelease(dataProvider);
     
     // Create and return an image object to represent the Quartz image.
-    UIImage *image = [UIImage imageWithCGImage:cgImage];
+    //UIImage *image = [UIImage imageWithCGImage:cgImage];
+    UIImage *image = [UIImage imageWithCGImage:cgImage scale:scale orientation:UIImageOrientationUp];
     CGImageRelease(cgImage);
     
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);

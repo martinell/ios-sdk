@@ -24,6 +24,7 @@
     int32_t _NumOfFramesCaptured;
     int32_t _searchRate;
     BOOL _isFinderModeON;
+    CGFloat _fScaleFactor;
 }
 
 // Performs a search call for an image stored in imageNSData that is formatted for best performance.
@@ -230,6 +231,8 @@
     // Create and Configure a Capture Session with Low preset = 192x144
     _avCaptureSession = [[AVCaptureSession alloc] init];
     _avCaptureSession.sessionPreset = AVCaptureSessionPresetMedium;
+    _fScaleFactor = 240.0f/360.0f; // for AVCaptureSessionPresetMedium
+    //_fScaleFactor = 240.0f/144.0f; // for AVCaptureSessionPresetLow
     
     // Create and Configure the Device and Device Input
     AVCaptureDevice *avCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
@@ -309,8 +312,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection {
     
     if (_NumOfFramesCaptured == 0 && _isFinderModeON) {
-        UIImage *resultUIImage = [ImageHandler imageFromSampleBuffer:sampleBuffer];
-        NSData *imageData = UIImageJPEGRepresentation(resultUIImage, 0.75);
+        //UIImage *resultUIImage = [ImageHandler imageFromSampleBuffer:sampleBuffer];
+        
+        UIImage *resultUIImage = [ImageHandler imageFromSampleBuffer:sampleBuffer andScaling:_fScaleFactor];
+        NSData *imageData = UIImageJPEGRepresentation(resultUIImage, 0.65);
         
         // Send image to CRS asynchronously
         dispatch_queue_t backgroundQueue;
