@@ -11,7 +11,7 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 
-#define kJPEGCompresion 0.5
+
 
 @interface ImageHandler : NSObject
 
@@ -22,7 +22,7 @@
 + (NSData *)imageNSDataFromUIImage: (UIImage*)image;
 
 // Helper function to transform a buffer into a UIImage
-+ (NSData*) imageNSDataFromSampleBuffer: (CMSampleBufferRef) sampleBuffer andScaling:(CGFloat)scale;
++ (NSData*) imageNSDataFromSampleBuffer: (CMSampleBufferRef) sampleBuffer;
 
 // block helper to download a image from a URL (handy to create a lazy load).
 void UIImageFromURL( NSURL * URL, void (^imageBlock)(UIImage * image), void (^errorBlock)(void));

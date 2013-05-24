@@ -184,31 +184,43 @@
             
             
             request.onDidLoadResponse = ^(RKResponse *response) {
-                
+
                 NSArray *parsedResponse = [response parsedBody:NULL];
-                if([parsedResponse count] > 0){
-                    if(response.statusCode == 200){
-                        
-                        if([[parsedResponse lastObject ]valueForKey:@"message"]){
-                            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Token Invalid", @"")
-                                                                            message:[parsedResponse valueForKey:@"message"]
-                                                                           delegate:self
-                                                                  cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                                  otherButtonTitles: nil];
-                            [alert show];
-                            
-                        }
-                        
-                        
-                    }else {
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"")
-                                                                        message:NSLocalizedString(@"there has been an error while uploading the picture to the server, please try it again later.", @"")
+                
+                if(response.statusCode == 200){
+                    // Check if the request was correctly formatted
+                    if([[parsedResponse lastObject ]valueForKey:@"message"]){
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Token Invalid", @"")
+                                                                        message:[parsedResponse valueForKey:@"message"]
                                                                        delegate:self
-                                                              cancelButtonTitle:NSLocalizedString(@"OK",@"")
+                                                              cancelButtonTitle:NSLocalizedString(@"OK", @"")
                                                               otherButtonTitles: nil];
                         [alert show];
+                        
                     }
+                    else if([parsedResponse count] == 0 && _isOneShotModeON)
+                    {
+                        // The request was processed correctly. Show no match alert in _isOneShotModeON.
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"NO MATCH", @"")
+                                                                        message:NSLocalizedString(@"there is no object in the collection that matches with any in the picture", @"")
+                                                                       delegate:self
+                                                              cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                                              otherButtonTitles: nil];
+                        
+                        [alert show];
+                        
+                    }
+                    
+                    
+                }else {
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"")
+                                                                    message:NSLocalizedString(@"there has been an error while uploading the picture to the server, please try it again later.", @"")
+                                                                   delegate:self
+                                                          cancelButtonTitle:NSLocalizedString(@"OK",@"")
+                                                          otherButtonTitles: nil];
+                    [alert show];
                 }
+                
                 [currentService didReceiveSearchResponse:parsedResponse];
                 
             };
@@ -227,6 +239,7 @@
     // Create and Configure a Capture Session with Low preset = 192x144
     _avCaptureSession = [[AVCaptureSession alloc] init];
     _avCaptureSession.sessionPreset = AVCaptureSessionPresetMedium;
+
     
     // Create and Configure the Device and Device Input
     AVCaptureDevice *avCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
@@ -243,7 +256,8 @@
     
     // Create and Configure the Data Output
     _stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-    NSDictionary *outputSettings = @{ AVVideoCodecKey : AVVideoCodecJPEG, AVVideoQualityKey : @kJPEGCompresion};
+    //NSDictionary *outputSettings = @{ AVVideoCodecKey : AVVideoCodecJPEG, AVVideoQualityKey : @kJPEGCompresion};
+    NSDictionary *outputSettings = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
     [_stillImageOutput setOutputSettings:outputSettings];
     
     if ( [_avCaptureSession canAddOutput:_stillImageOutput] )
@@ -287,6 +301,11 @@
     AVCaptureConnection *stillImageConnection = [_stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
     [_stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection completionHandler:
      ^(CMSampleBufferRef imageSampleBuffer, NSError *error) {
+         
+         if (error != nil) {
+             NSLog(@"error with captureStillImageAsynchronouslyFromConnection %@", [error localizedDescription]);
+         }
+         
           /*// Uncomment if exif details are needed.
           CFDictionaryRef exifAttachments = CMGetAttachment(imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
           if (exifAttachments) {
@@ -298,7 +317,8 @@
          NSLog(@"Captured Still Image. Preparing to Send.");
          
          // Convert CMSampleBufferRef to UIImage
-         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
+         //NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation: imageSampleBuffer];
+         NSData *imageData = [ImageHandler imageNSDataFromSampleBuffer:imageSampleBuffer];
          //UIImage *image = [[UIImage alloc] initWithData:imageData];
          
          // Send image to CRS asynchronously
@@ -308,19 +328,18 @@
              [self searchWithData:imageData];
          });
          dispatch_release(backgroundQueue);
+         
+         // Stop Camera Capture
+         [_avCaptureSession stopRunning];
+         
+         [_scanFXlayer startAnimations];
+         
+         [_uiTakePictureButton removeFromSuperview];
+         _uiTakePictureButton = nil;
+         
+         _stillImageOutput = nil;
      }];
-    
-    
-    // Stop Camera Capture
-    [_avCaptureSession stopRunning];
-    
-    [_scanFXlayer startAnimations];
-    
-    [_uiTakePictureButton removeFromSuperview];
-    _uiTakePictureButton = nil;
-    
-    _stillImageOutput = nil;
-    
+
 }
 
 
@@ -342,11 +361,21 @@
     // Create and Configure a Capture Session with Low preset = 192x144
     _avCaptureSession = [[AVCaptureSession alloc] init];
     _avCaptureSession.sessionPreset = AVCaptureSessionPresetMedium;
-    _fScaleFactor = 240.0f/360.0f; // for AVCaptureSessionPresetMedium
-    //_fScaleFactor = 240.0f/144.0f; // for AVCaptureSessionPresetLow
     
     // Create and Configure the Device and Device Input
     AVCaptureDevice *avCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    
+    if ([avCaptureDevice isFocusPointOfInterestSupported]) {
+        NSError *lockError;
+        if ([avCaptureDevice lockForConfiguration:&lockError]) {
+            NSLog(@"Focus forced on the center of the camera viewfinder.");
+            avCaptureDevice.focusPointOfInterest = CGPointMake(0.5f, 0.5f);
+            
+            [avCaptureDevice unlockForConfiguration];
+        }
+
+    }
+    
     
     NSError *error = nil;
     AVCaptureDeviceInput *avCaptureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:avCaptureDevice error:&error];
@@ -427,7 +456,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (_NumOfFramesCaptured == 0 && _isFinderModeON) {
         //UIImage *resultUIImage = [ImageHandler imageFromSampleBuffer:sampleBuffer];
         
-        NSData *imageData = [ImageHandler imageNSDataFromSampleBuffer:sampleBuffer andScaling:_fScaleFactor];
+        NSData *imageData = [ImageHandler imageNSDataFromSampleBuffer:sampleBuffer];
         
         // Send image to CRS asynchronously
         dispatch_queue_t backgroundQueue;

@@ -10,11 +10,14 @@
 #import "ImageHandler.h"
 #import "ImageTransformations.h"
 
+#define kJPEGCompresion 0.5
+#define kShortestSideInPixels 240
+
 @implementation ImageHandler
 
 + (NSData *)imageNSDataFromUIImage: (UIImage*)image
 {
-    UIImage *imgScaled = [ImageTransformations scaleImage:image shortestSide:240];
+    UIImage *imgScaled = [ImageTransformations scaleImage:image shortestSide: kShortestSideInPixels ];
     UIImage *img = [ImageTransformations convertToGrayScale: imgScaled];
  
     //UIImage *imgScaled = [ImageTransformations scaleImage:image shortestSide:240];
@@ -22,7 +25,7 @@
 }
 
 // scale < 1.0f downscales the image. scale > 1.0f upscales the image.
-+ (NSData*) imageNSDataFromSampleBuffer: (CMSampleBufferRef) sampleBuffer andScaling:(CGFloat)scale
++ (NSData*) imageNSDataFromSampleBuffer: (CMSampleBufferRef) sampleBuffer
 {
     
     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -67,7 +70,8 @@
     
     // Create and return an image object to represent the Quartz image.
     UIImage *image = [UIImage imageWithCGImage:cgImage];
-    UIImage *scaledImage = [ImageTransformations scaleImage:image withFactor:scale];
+    
+    UIImage *scaledImage = [ImageTransformations scaleImage:image shortestSide: kShortestSideInPixels];
 
     CGImageRelease(cgImage);
     
