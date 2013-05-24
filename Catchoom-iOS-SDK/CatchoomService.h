@@ -43,6 +43,8 @@
 // Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
 - (void)stopFinderMode;
 
+- (void)startOneShotModeWithPreview:(UIView*)mainView;
+
 @end
 
 

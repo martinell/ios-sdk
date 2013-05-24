@@ -21,15 +21,25 @@
 
     ScanFXLayer *_scanFXlayer;
     
+    // Finder Mode
     int32_t _NumOfFramesCaptured;
     int32_t _searchRate;
     BOOL _isFinderModeON;
     CGFloat _fScaleFactor;
+    
+    // One-shot Mode
+    AVCaptureStillImageOutput *_stillImageOutput;
+    BOOL _isOneShotModeON;
+    NSTimer *_nstimerStillImageCapture; // DELETE TIMER
 }
 
 // Performs a search call for an image stored in imageNSData that is formatted for best performance.
 // Answers with a delegate didReceiveSearchResponse: or didFailLoadWithError:
 - (void)searchWithData:(NSData *)imageNSData;
+
+
+// CHANGE NO TIMER
+- (void)captureImage:(NSTimer*)theTimer;
 
 @end
 
@@ -214,6 +224,97 @@
 }
 
 #pragma mark -
+#pragma mark - One-shot Mode
+
+- (void)startOneShotModeWithPreview:(UIView*)mainView
+{
+    // Create and Configure a Capture Session with Low preset = 192x144
+    _avCaptureSession = [[AVCaptureSession alloc] init];
+    _avCaptureSession.sessionPreset = AVCaptureSessionPresetMedium;
+    
+    // Create and Configure the Device and Device Input
+    AVCaptureDevice *avCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    
+    NSError *error = nil;
+    AVCaptureDeviceInput *avCaptureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:avCaptureDevice error:&error];
+    if (!avCaptureDeviceInput) {
+        NSLog(@"ERROR: Couldn't create AVCaptureDeviceInput.");
+    }
+    if ( [_avCaptureSession canAddInput:avCaptureDeviceInput] )
+    {
+        [_avCaptureSession addInput:avCaptureDeviceInput];
+    }
+    
+    // Create and Configure the Data Output
+    _stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+    NSDictionary *outputSettings = @{ AVVideoCodecKey : AVVideoCodecJPEG, AVVideoQualityKey : @0.75};
+    [_stillImageOutput setOutputSettings:outputSettings];
+    
+    if ( [_avCaptureSession canAddOutput:_stillImageOutput] )
+    {
+        [_avCaptureSession addOutput:_stillImageOutput];
+    }
+    // Add video preview
+    if (mainView != nil) {
+        
+        CALayer *rootLayer = mainView.layer;
+        [rootLayer setMasksToBounds:YES];
+        
+        _scanFXlayer = [[ScanFXLayer alloc] initWithBounds:[rootLayer bounds] withSession:_avCaptureSession];
+        
+        [rootLayer addSublayer:_scanFXlayer];
+        
+    }
+    
+    // Start Capture
+    _isOneShotModeON = TRUE;
+    [_avCaptureSession startRunning];
+    
+    // Capture image every X seconds
+    _nstimerStillImageCapture = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(captureImage:) userInfo:nil repeats:YES];
+    
+}
+
+- (void)captureImage:(NSTimer*)theTimer
+{
+    AVCaptureConnection *stillImageConnection = [_stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
+    
+    [_stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection completionHandler:
+     ^(CMSampleBufferRef imageSampleBuffer, NSError *error) {
+          // Uncomment if exif details are needed.
+          CFDictionaryRef exifAttachments = CMGetAttachment(imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
+          if (exifAttachments) {
+          NSLog(@"attachments: %@", exifAttachments);
+          } else {
+          NSLog(@"no attachments");
+          }
+         NSLog(@"Captured Still Image. Preparing to Send.");
+         
+         // Convert CMSampleBufferRef to UIImage
+         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
+         //UIImage *image = [[UIImage alloc] initWithData:imageData];
+         
+         // Send image to CRS asynchronously
+         dispatch_queue_t backgroundQueue;
+         backgroundQueue = dispatch_queue_create("com.catchoom.catchoom.background", NULL);
+         dispatch_async(backgroundQueue, ^(void) {
+             [self searchWithData:imageData];
+         });
+         dispatch_release(backgroundQueue);
+     }];
+    
+    // Stop timer (= stop capturing still images)
+	[_nstimerStillImageCapture invalidate];
+	_nstimerStillImageCapture = nil;
+    
+    // Stop Camera Capture
+    [_avCaptureSession stopRunning];
+    
+    _stillImageOutput = nil;
+}
+
+
+#pragma mark -
 #pragma mark - Finder Mode
 
 #define MAXVIDEOFRAMERATE 30
@@ -353,6 +454,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [_parsedElements addObject:model];
     }];
     
+    if (_isOneShotModeON) {
+        _isOneShotModeON = FALSE;
+        [_scanFXlayer remove];
+        _scanFXlayer = nil;
+    }
     
     [self.delegate didReceiveSearchResponse:_parsedElements];
 }
