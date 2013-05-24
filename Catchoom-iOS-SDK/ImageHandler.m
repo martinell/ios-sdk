@@ -14,13 +14,14 @@
 
 + (NSData *)prepareNSDataFromUIImage: (UIImage*)image
 {
-    UIImage *imageGRAY = [ImageTransformations convertToGrayScale: image];
-    
-    UIImage *img = [ImageTransformations scaleImage:imageGRAY shortestSide:240];
+    UIImage *imgScaled = [ImageTransformations scaleImage:image shortestSide:240];
+    UIImage *img = [ImageTransformations convertToGrayScale: imgScaled];
+ 
     //UIImage *imgScaled = [ImageTransformations scaleImage:image shortestSide:240];
     return UIImageJPEGRepresentation( img , 0.65 );
 }
 
+// scale < 1.0f downscales the image. scale > 1.0f upscales the image.
 + (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer andScaling:(CGFloat)scale
 {
     
@@ -65,13 +66,14 @@
     CGDataProviderRelease(dataProvider);
     
     // Create and return an image object to represent the Quartz image.
-    //UIImage *image = [UIImage imageWithCGImage:cgImage];
-    UIImage *image = [UIImage imageWithCGImage:cgImage scale:scale orientation:UIImageOrientationUp];
+    UIImage *image = [UIImage imageWithCGImage:cgImage];
+    UIImage *scaledImage = [ImageTransformations scaleImage:image withFactor:scale];
+
     CGImageRelease(cgImage);
     
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     
-    return image;
+    return scaledImage;
 }
 
 #pragma mark -

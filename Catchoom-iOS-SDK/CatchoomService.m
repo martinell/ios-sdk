@@ -273,6 +273,7 @@
     
     // Start Capture
     _isOneShotModeON = TRUE;
+    _isFinderModeON = FALSE;
     [_avCaptureSession startRunning];
     
     // Capture image every X seconds
@@ -395,6 +396,7 @@
     // Start capturing
     NSLog(@"Starting Finder mode.");
     _isFinderModeON = TRUE;
+    _isOneShotModeON = FALSE;
     [_scanFXlayer startAnimations];
     [_avCaptureSession startRunning];
     
@@ -426,7 +428,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         //UIImage *resultUIImage = [ImageHandler imageFromSampleBuffer:sampleBuffer];
         
         UIImage *resultUIImage = [ImageHandler imageFromSampleBuffer:sampleBuffer andScaling:_fScaleFactor];
-        NSData *imageData = UIImageJPEGRepresentation(resultUIImage, 0.65);
+        NSData *imageData = UIImageJPEGRepresentation(resultUIImage, 0.6);
         
         // Send image to CRS asynchronously
         dispatch_queue_t backgroundQueue;
