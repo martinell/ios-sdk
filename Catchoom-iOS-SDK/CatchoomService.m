@@ -142,7 +142,7 @@
 
 -(void)search:(UIImage*)image
 {
-    NSData *newImage = [ImageHandler prepareNSDataFromUIImage: image];
+    NSData *newImage = [ImageHandler imageNSDataFromUIImage: image];
     [self searchWithData:newImage];
 }
 
@@ -243,7 +243,7 @@
     
     // Create and Configure the Data Output
     _stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-    NSDictionary *outputSettings = @{ AVVideoCodecKey : AVVideoCodecJPEG, AVVideoQualityKey : @0.75};
+    NSDictionary *outputSettings = @{ AVVideoCodecKey : AVVideoCodecJPEG, AVVideoQualityKey : @kJPEGCompresion};
     [_stillImageOutput setOutputSettings:outputSettings];
     
     if ( [_avCaptureSession canAddOutput:_stillImageOutput] )
@@ -427,8 +427,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (_NumOfFramesCaptured == 0 && _isFinderModeON) {
         //UIImage *resultUIImage = [ImageHandler imageFromSampleBuffer:sampleBuffer];
         
-        UIImage *resultUIImage = [ImageHandler imageFromSampleBuffer:sampleBuffer andScaling:_fScaleFactor];
-        NSData *imageData = UIImageJPEGRepresentation(resultUIImage, 0.6);
+        NSData *imageData = [ImageHandler imageNSDataFromSampleBuffer:sampleBuffer andScaling:_fScaleFactor];
         
         // Send image to CRS asynchronously
         dispatch_queue_t backgroundQueue;

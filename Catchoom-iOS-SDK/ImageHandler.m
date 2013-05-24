@@ -12,17 +12,17 @@
 
 @implementation ImageHandler
 
-+ (NSData *)prepareNSDataFromUIImage: (UIImage*)image
++ (NSData *)imageNSDataFromUIImage: (UIImage*)image
 {
     UIImage *imgScaled = [ImageTransformations scaleImage:image shortestSide:240];
     UIImage *img = [ImageTransformations convertToGrayScale: imgScaled];
  
     //UIImage *imgScaled = [ImageTransformations scaleImage:image shortestSide:240];
-    return UIImageJPEGRepresentation( img , 0.65 );
+    return UIImageJPEGRepresentation( img , kJPEGCompresion );
 }
 
 // scale < 1.0f downscales the image. scale > 1.0f upscales the image.
-+ (UIImage*) imageFromSampleBuffer: (CMSampleBufferRef) sampleBuffer andScaling:(CGFloat)scale
++ (NSData*) imageNSDataFromSampleBuffer: (CMSampleBufferRef) sampleBuffer andScaling:(CGFloat)scale
 {
     
     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -73,7 +73,9 @@
     
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     
-    return scaledImage;
+    NSData *imageData = UIImageJPEGRepresentation(scaledImage, kJPEGCompresion);
+    
+    return imageData;
 }
 
 #pragma mark -
