@@ -43,6 +43,7 @@
 @implementation CatchoomService
 @synthesize delegate = _delegate;
 @synthesize _isFinderModeON;
+@synthesize _isOneShotModeON;
 
 #pragma mark -
 #pragma mark - RESTKit connection management
@@ -198,20 +199,6 @@
                         [alert show];
                         
                     }
-                    else if([parsedResponse count] == 0 && _isOneShotModeON)
-                    {
-                        // The request was processed correctly. Show no match alert in _isOneShotModeON.
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"NO MATCH", @"")
-                                                                        message:NSLocalizedString(@"there is no object in the collection that matches with any in the picture", @"")
-                                                                       delegate:self
-                                                              cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                                              otherButtonTitles: nil];
-                        
-                        [alert show];
-                        
-                    }
-                    
-                    
                 }else {
                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"")
                                                                     message:NSLocalizedString(@"there has been an error while uploading the picture to the server, please try it again later.", @"")

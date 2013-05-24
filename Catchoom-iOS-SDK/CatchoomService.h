@@ -18,6 +18,7 @@
 
 @property (nonatomic, weak) id <CatchoomServiceProtocol> delegate;
 @property BOOL _isFinderModeON;
+@property BOOL _isOneShotModeON;
 
 + (CatchoomService *)sharedCatchoom;
 
