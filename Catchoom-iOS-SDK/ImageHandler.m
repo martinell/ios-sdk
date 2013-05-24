@@ -70,14 +70,14 @@
     
     // Create and return an image object to represent the Quartz image.
     UIImage *image = [UIImage imageWithCGImage:cgImage];
-    
     UIImage *scaledImage = [ImageTransformations scaleImage:image shortestSide: kShortestSideInPixels];
-
+    UIImage *scaleGreyImage = [ImageTransformations convertToGrayScale:scaledImage];
+    
     CGImageRelease(cgImage);
     
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     
-    NSData *imageData = UIImageJPEGRepresentation(scaledImage, kJPEGCompresion);
+    NSData *imageData = UIImageJPEGRepresentation(scaleGreyImage, kJPEGCompresion);
     
     return imageData;
 }
