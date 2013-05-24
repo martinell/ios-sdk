@@ -30,16 +30,12 @@
     // One-shot Mode
     AVCaptureStillImageOutput *_stillImageOutput;
     BOOL _isOneShotModeON;
-    NSTimer *_nstimerStillImageCapture; // DELETE TIMER
+    UIButton *_uiTakePictureButton;
 }
 
 // Performs a search call for an image stored in imageNSData that is formatted for best performance.
 // Answers with a delegate didReceiveSearchResponse: or didFailLoadWithError:
 - (void)searchWithData:(NSData *)imageNSData;
-
-
-// CHANGE NO TIMER
-- (void)captureImage:(NSTimer*)theTimer;
 
 @end
 
@@ -266,28 +262,38 @@
         
     }
     
+    _uiTakePictureButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [_uiTakePictureButton addTarget:self
+               action:@selector(captureImage)
+     forControlEvents:UIControlEventTouchUpInside];
+    [_uiTakePictureButton setTitle:@"Take Picture" forState:UIControlStateNormal];
+    [_uiTakePictureButton setTitleColor:[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 1.0f] forState:UIControlStateNormal ];
+    _uiTakePictureButton.frame = CGRectMake(mainView.frame.size.width/2-80.0, mainView.frame.size.height-60.0, 160.0, 40.0);
+    [mainView addSubview:_uiTakePictureButton];
+    
     // Start Capture
     _isOneShotModeON = TRUE;
     [_avCaptureSession startRunning];
     
     // Capture image every X seconds
-    _nstimerStillImageCapture = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(captureImage:) userInfo:nil repeats:YES];
+    //_nstimerStillImageCapture = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(captureImage:) userInfo:nil repeats:YES];
     
 }
 
-- (void)captureImage:(NSTimer*)theTimer
+- (void)captureImage
 {
-    AVCaptureConnection *stillImageConnection = [_stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
     
+    AVCaptureConnection *stillImageConnection = [_stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
     [_stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection completionHandler:
      ^(CMSampleBufferRef imageSampleBuffer, NSError *error) {
-          // Uncomment if exif details are needed.
+          /*// Uncomment if exif details are needed.
           CFDictionaryRef exifAttachments = CMGetAttachment(imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
           if (exifAttachments) {
           NSLog(@"attachments: %@", exifAttachments);
           } else {
           NSLog(@"no attachments");
-          }
+          }*/
+
          NSLog(@"Captured Still Image. Preparing to Send.");
          
          // Convert CMSampleBufferRef to UIImage
@@ -303,14 +309,17 @@
          dispatch_release(backgroundQueue);
      }];
     
-    // Stop timer (= stop capturing still images)
-	[_nstimerStillImageCapture invalidate];
-	_nstimerStillImageCapture = nil;
     
     // Stop Camera Capture
     [_avCaptureSession stopRunning];
     
+    [_scanFXlayer startAnimations];
+    
+    [_uiTakePictureButton removeFromSuperview];
+    _uiTakePictureButton = nil;
+    
     _stillImageOutput = nil;
+    
 }
 
 
@@ -386,6 +395,7 @@
     // Start capturing
     NSLog(@"Starting Finder mode.");
     _isFinderModeON = TRUE;
+    [_scanFXlayer startAnimations];
     [_avCaptureSession startRunning];
     
 }

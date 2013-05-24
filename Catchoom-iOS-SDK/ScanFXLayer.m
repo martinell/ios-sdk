@@ -26,56 +26,57 @@
         }
         
         [self addSublayer:_captureVideoPreviewLayer];
+     
         
-        
+        // Animation Left to Right
         _left2RightLayer = [CALayer layer];
-        [_left2RightLayer setFrame:bounds];
+        [_left2RightLayer setFrame:self.bounds];
         [_left2RightLayer setDelegate:self];
         [_left2RightLayer setNeedsDisplay];
         
-        /*CABasicAnimation* animation = [CABasicAnimation animationWithKeyPath:@"transform.translation"];
-         [animation setDuration:1.5];
-         [animation setRepeatCount:INT_MAX];
-         [animation setFromValue:[NSNumber numberWithInt:0] ];
-         CGRect layerBounds = rootLayer.bounds;
-         [animation setToValue:[NSNumber numberWithInt:layerBounds.size.width]];
-         */
         
-        CAKeyframeAnimation *animationLeft2Right = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.x"];
-        [animationLeft2Right setDuration:2.0];
-        [animationLeft2Right setRepeatCount:INT_MAX];
-        
-        NSMutableArray *values = [NSMutableArray array];
-        [values addObject:[NSNumber numberWithInt:bounds.origin.x]];
-        [values addObject:[NSNumber numberWithInt:bounds.origin.x + bounds.size.width]];
-        [values addObject:[NSNumber numberWithInt:bounds.origin.x]];
-        [animationLeft2Right setValues:values];
-        
-        [_left2RightLayer addAnimation:animationLeft2Right forKey:nil];
-        
-        
+        // Animation Bottom to Top
         _bottom2TopLayer = [CALayer layer];
-        [_bottom2TopLayer setFrame:bounds];
+        [_bottom2TopLayer setFrame:self.bounds];
         [_bottom2TopLayer setDelegate:self];
         [_bottom2TopLayer setNeedsDisplay];
         
-        CAKeyframeAnimation *animationBottom2Top = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.y"];
-        [animationBottom2Top setDuration:2.0];
-        [animationBottom2Top setRepeatCount:INT_MAX];
-        
-        [values removeAllObjects];
-        [values addObject:[NSNumber numberWithInt:bounds.origin.y]];
-        [values addObject:[NSNumber numberWithInt:bounds.origin.y + bounds.size.height]];
-        [values addObject:[NSNumber numberWithInt:bounds.origin.y]];
-        [animationBottom2Top setValues:values];
-        
-        [_bottom2TopLayer addAnimation:animationBottom2Top forKey:nil];
-        
-        //[self addSublayer:_left2RightLayer];
-        [self addSublayer:_bottom2TopLayer];
     }
     return self;
     
+}
+
+- (void)startAnimations
+{
+
+    
+    CAKeyframeAnimation *animationLeft2Right = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.x"];
+    [animationLeft2Right setDuration:2.0];
+    [animationLeft2Right setRepeatCount:INT_MAX];
+    
+    NSMutableArray *values = [NSMutableArray array];
+    [values addObject:[NSNumber numberWithInt:self.bounds.origin.x]];
+    [values addObject:[NSNumber numberWithInt:self.bounds.origin.x + self.bounds.size.width]];
+    [values addObject:[NSNumber numberWithInt:self.bounds.origin.x]];
+    [animationLeft2Right setValues:values];
+    
+    [_left2RightLayer addAnimation:animationLeft2Right forKey:nil];
+    
+    //[self addSublayer:_left2RightLayer];
+    
+    CAKeyframeAnimation *animationBottom2Top = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.y"];
+    [animationBottom2Top setDuration:2.0];
+    [animationBottom2Top setRepeatCount:INT_MAX];
+    
+    [values removeAllObjects];
+    [values addObject:[NSNumber numberWithInt:self.bounds.origin.y]];
+    [values addObject:[NSNumber numberWithInt:self.bounds.origin.y + self.bounds.size.height]];
+    [values addObject:[NSNumber numberWithInt:self.bounds.origin.y]];
+    [animationBottom2Top setValues:values];
+    
+    [_bottom2TopLayer addAnimation:animationBottom2Top forKey:nil];
+    
+    [self addSublayer:_bottom2TopLayer];
 }
 
 - (void)remove

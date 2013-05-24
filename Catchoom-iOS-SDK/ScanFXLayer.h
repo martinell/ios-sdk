@@ -17,6 +17,7 @@
 }
 
 - (id) initWithBounds:(CGRect)bounds withSession:(AVCaptureSession*)avCaptureSession;
+- (void)startAnimations;
 - (void) remove;
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef) ctx;
 @end
