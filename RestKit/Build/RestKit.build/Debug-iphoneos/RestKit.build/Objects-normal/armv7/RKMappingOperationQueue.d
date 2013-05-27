@@ -1,3 +1,3 @@
 dependencies: \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKMappingOperationQueue.m \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/ObjectMapping/RKMappingOperationQueue.h
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Code/ObjectMapping/RKMappingOperationQueue.m \
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Code/ObjectMapping/RKMappingOperationQueue.h

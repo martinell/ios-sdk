@@ -1,4 +1,4 @@
 dependencies: \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Testing/RKTestFixture.m \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Testing/RKTestFixture.h \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/NSBundle+RKAdditions.h
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Code/Testing/RKTestFixture.m \
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Code/Testing/RKTestFixture.h \
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Code/Support/NSBundle+RKAdditions.h

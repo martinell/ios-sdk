@@ -1,3 +1,3 @@
 dependencies: \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/UI/RKControlTableViewCell.m \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/UI/RKControlTableViewCell.h
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Code/UI/RKControlTableViewCell.m \
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Code/UI/RKControlTableViewCell.h

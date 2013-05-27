@@ -1,2 +1,2 @@
 dependencies: \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Vendor/LibComponentLogging/NSLog/LCLNSLog.m
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Vendor/LibComponentLogging/NSLog/LCLNSLog.m

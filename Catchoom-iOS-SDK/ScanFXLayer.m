@@ -10,10 +10,20 @@
 
 @implementation ScanFXLayer
 
-- (id) initWithBounds:(CGRect)bounds withSession:(AVCaptureSession*)avCaptureSession
+- (id) initWithViewController:(UIViewController*)rootViewController withSession:(AVCaptureSession*)avCaptureSession
 {
     self = [super init];
     if (self) {
+        
+        if (rootViewController == nil || avCaptureSession == nil) {
+            return nil;
+        }
+
+        UIView* rootView = rootViewController.view;
+        CALayer *rootLayer = rootView.layer;
+        [rootLayer setMasksToBounds:YES];
+        CGRect bounds = rootLayer.bounds;
+        
         [self setFrame:bounds];
         
         _captureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:avCaptureSession];
@@ -21,9 +31,27 @@
         [_captureVideoPreviewLayer setBackgroundColor : [[UIColor blackColor] CGColor]];
         
         [_captureVideoPreviewLayer setFrame:[self bounds]];
+
+        /*
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [_captureVideoPreviewLayer setOrientation:AVCaptureVideoOrientationLandscapeRight];
+        }*/
+        
+        switch ([rootViewController interfaceOrientation]) {
+            case UIInterfaceOrientationPortrait:
+                [_captureVideoPreviewLayer setOrientation:AVCaptureVideoOrientationPortrait];
+                break;
+            case UIInterfaceOrientationLandscapeRight:
+                [_captureVideoPreviewLayer setOrientation:AVCaptureVideoOrientationLandscapeRight];
+                break;
+            case UIInterfaceOrientationLandscapeLeft:
+                [_captureVideoPreviewLayer setOrientation:AVCaptureVideoOrientationLandscapeLeft];
+                break;
+            default:
+                [_captureVideoPreviewLayer setOrientation:AVCaptureVideoOrientationPortrait];
+                break;
         }
+
         
         [self addSublayer:_captureVideoPreviewLayer];
      
@@ -40,6 +68,8 @@
         [_bottom2TopLayer setFrame:self.bounds];
         [_bottom2TopLayer setDelegate:self];
         [_bottom2TopLayer setNeedsDisplay];
+        
+        [rootLayer addSublayer:self];
         
     }
     return self;

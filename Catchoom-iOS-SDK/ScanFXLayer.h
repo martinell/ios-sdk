@@ -16,7 +16,7 @@
     AVCaptureVideoPreviewLayer *_captureVideoPreviewLayer;
 }
 
-- (id) initWithBounds:(CGRect)bounds withSession:(AVCaptureSession*)avCaptureSession;
+- (id) initWithViewController:(UIViewController*)superViewController withSession:(AVCaptureSession*)avCaptureSession;
 - (void)startAnimations;
 - (void) remove;
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef) ctx;

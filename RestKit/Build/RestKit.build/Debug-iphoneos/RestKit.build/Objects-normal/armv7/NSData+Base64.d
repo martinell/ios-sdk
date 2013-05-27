@@ -1,4 +1,4 @@
 dependencies: \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Vendor/cocoa-oauth/NSData+Base64.m \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Vendor/cocoa-oauth/NSData+Base64.h \
-  /Users/crisredfi/Documents/iPhoneProjects/Catchoom/CRSMobile/RestKit/Code/Support/RKFixCategoryBug.h
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Vendor/cocoa-oauth/NSData+Base64.m \
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Vendor/cocoa-oauth/NSData+Base64.h \
+  /Users/marimon/Documents/CRS/App/CRCFinderMode/ios-crc/ios-sdk/RestKit/Code/Support/RKFixCategoryBug.h

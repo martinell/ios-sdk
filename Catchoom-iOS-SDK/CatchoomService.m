@@ -221,7 +221,7 @@
 #pragma mark -
 #pragma mark - One-shot Mode
 
-- (void)startOneShotModeWithPreview:(UIView*)mainView
+- (void)startOneShotModeWithPreview:(UIViewController*)mainViewController
 {
     // Create and Configure a Capture Session with Low preset = 192x144
     _avCaptureSession = [[AVCaptureSession alloc] init];
@@ -252,14 +252,14 @@
         [_avCaptureSession addOutput:_stillImageOutput];
     }
     // Add video preview
-    if (mainView != nil) {
+    if (mainViewController != nil) {
         
-        CALayer *rootLayer = mainView.layer;
-        [rootLayer setMasksToBounds:YES];
+        //CALayer *rootLayer = mainView.layer;
+        //[rootLayer setMasksToBounds:YES];
         
-        _scanFXlayer = [[ScanFXLayer alloc] initWithBounds:[rootLayer bounds] withSession:_avCaptureSession];
+        _scanFXlayer = [[ScanFXLayer alloc] initWithViewController:mainViewController withSession:_avCaptureSession];
         
-        [rootLayer addSublayer:_scanFXlayer];
+        //[rootLayer addSublayer:_scanFXlayer];
         
     }
     
@@ -268,17 +268,18 @@
                action:@selector(captureImage)
      forControlEvents:UIControlEventTouchUpInside];
     [_uiTakePictureButton setTitle:@"Take Picture" forState:UIControlStateNormal];
-    [_uiTakePictureButton setTitleColor:[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 1.0f] forState:UIControlStateNormal ];
-    _uiTakePictureButton.frame = CGRectMake(mainView.frame.size.width/2-80.0, mainView.frame.size.height-60.0, 160.0, 40.0);
-    [mainView addSubview:_uiTakePictureButton];
+    [_uiTakePictureButton setTitleColor: [UIColor whiteColor] forState:UIControlStateNormal ];
+    [_uiTakePictureButton setBackgroundColor:[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 1.0f]];
+    
+    [_uiTakePictureButton setTitleColor:[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 0.5f] forState:UIControlStateHighlighted ];
+    
+    _uiTakePictureButton.frame = CGRectMake(mainViewController.view.frame.size.width/2-80.0, mainViewController.view.frame.size.height-60.0, 160.0, 40.0);
+    [mainViewController.view addSubview:_uiTakePictureButton];
     
     // Start Capture
     _isOneShotModeON = TRUE;
     _isFinderModeON = FALSE;
     [_avCaptureSession startRunning];
-    
-    // Capture image every X seconds
-    //_nstimerStillImageCapture = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(captureImage:) userInfo:nil repeats:YES];
     
 }
 
@@ -337,7 +338,7 @@
 #define MINVIDEOFRAMERATE 15
 
 // Creates an AVCaptureSession suitable for Finder Mode.
-- (void)startFinderMode:(int32_t)searchesPerSecond withPreview:(UIView*)mainView
+- (void)startFinderMode:(int32_t)searchesPerSecond withPreview:(UIViewController*)mainViewController
 {
     
     if  (searchesPerSecond <= 0)
@@ -390,14 +391,14 @@
     [videoCaptureConnection setVideoMaxFrameDuration:CMTimeMake(1, MINVIDEOFRAMERATE)];
     
     //[Optional] add layer to draw scanning effect
-    if (mainView != nil) {
+    if (mainViewController != nil) {
 
-        CALayer *rootLayer = mainView.layer;
-        [rootLayer setMasksToBounds:YES];
+        //CALayer *rootLayer = mainView.layer;
+        //[rootLayer setMasksToBounds:YES];
         
-        _scanFXlayer = [[ScanFXLayer alloc] initWithBounds:[rootLayer bounds] withSession:_avCaptureSession];
+        _scanFXlayer = [[ScanFXLayer alloc] initWithViewController:mainViewController withSession:_avCaptureSession];
         
-        [rootLayer addSublayer:_scanFXlayer];
+        //[rootLayer addSublayer:_scanFXlayer];
         
     }
     

@@ -80,7 +80,7 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		F073FDC5162F2E3100054A56 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = "include/${PRODUCT_NAME}";
 			dstSubfolderSpec = 16;
 			files = (
@@ -441,6 +441,7 @@
 				PRODUCT_NAME = "Catchoom-iOS-SDK";
 				PUBLIC_HEADERS_FOLDER_PATH = "include/$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -463,6 +464,7 @@
 				PRODUCT_NAME = "Catchoom-iOS-SDK";
 				PUBLIC_HEADERS_FOLDER_PATH = "include/$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

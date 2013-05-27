@@ -39,12 +39,12 @@
 
 /// Finder Mode: performs a continuous scan of information in the viewfinder.
 // Creates an AVCaptureSession suitable for Finder Mode.
-- (void)startFinderMode:(int32_t)searchesPerSecond withPreview:(UIView*)mainView;
+- (void)startFinderMode:(int32_t)searchesPerSecond withPreview:(UIViewController*)mainViewController;
 
 // Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
 - (void)stopFinderMode;
 
-- (void)startOneShotModeWithPreview:(UIView*)mainView;
+- (void)startOneShotModeWithPreview:(UIViewController*)mainViewController;
 
 @end
 
