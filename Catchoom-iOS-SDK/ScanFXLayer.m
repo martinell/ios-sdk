@@ -186,4 +186,34 @@
     }
     
 }
+
+// Helper function to specify a look&feel for a button
++ (UIButton*)createUIButtonWithText:(NSString*)text andFrame:(CGRect)rect
+{
+    UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
+    
+    [button setTitle:text forState:UIControlStateNormal];
+    [button setTitleColor: [UIColor whiteColor] forState:UIControlStateNormal];
+    
+    button.frame = rect;
+    [[button layer] setCornerRadius:12.0f];
+    [[button layer] setMasksToBounds:YES];
+    
+    // apply the border
+    button.layer.borderWidth = 1.0;
+    button.layer.borderColor = [[UIColor blackColor] CGColor];
+    
+    // add the drop shadow
+    button.layer.shadowColor = [[UIColor blackColor] CGColor];
+    button.layer.shadowOffset = CGSizeMake(2.0, 2.0);
+    button.layer.shadowOpacity = 0.25;
+    
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = button.bounds;
+    gradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 1.0f] CGColor], [[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 0.5f] CGColor], nil];
+    [button.layer insertSublayer:gradientLayer atIndex:0];
+    
+    return button;
+}
+
 @end

@@ -20,4 +20,7 @@
 - (void)startAnimations;
 - (void) remove;
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef) ctx;
+
++ (UIButton*)createUIButtonWithText:(NSString*)text andFrame:(CGRect)rect;
 @end
+
