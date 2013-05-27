@@ -263,17 +263,39 @@
         
     }
     
-    _uiTakePictureButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    _uiTakePictureButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_uiTakePictureButton addTarget:self
                action:@selector(captureImage)
      forControlEvents:UIControlEventTouchUpInside];
     [_uiTakePictureButton setTitle:@"Take Picture" forState:UIControlStateNormal];
-    [_uiTakePictureButton setTitleColor: [UIColor whiteColor] forState:UIControlStateNormal ];
-    [_uiTakePictureButton setBackgroundColor:[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 1.0f]];
+    [_uiTakePictureButton setTitleColor: [UIColor whiteColor] forState:UIControlStateNormal];
+    
+    [[_uiTakePictureButton layer] setCornerRadius:12.0f];
+    [[_uiTakePictureButton layer] setMasksToBounds:YES];
+    //[[_uiTakePictureButton layer] setBackgroundColor:[[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 1.0f] CGColor]];
+    // apply the border
+    _uiTakePictureButton.layer.borderWidth = 1.0;
+    _uiTakePictureButton.layer.borderColor = [[UIColor blackColor] CGColor];
+    
+    // add the drop shadow
+    _uiTakePictureButton.layer.shadowColor = [[UIColor blackColor] CGColor];
+    _uiTakePictureButton.layer.shadowOffset = CGSizeMake(2.0, 2.0);
+    _uiTakePictureButton.layer.shadowOpacity = 0.25;
+
+    _uiTakePictureButton.frame = CGRectMake(mainViewController.view.frame.size.width/2-80.0, mainViewController.view.frame.size.height-60.0, 160.0, 40.0);
+    
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.frame = _uiTakePictureButton.bounds;
+    gradientLayer.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 1.0f] CGColor], [[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 0.5f] CGColor], nil];
+    [_uiTakePictureButton.layer insertSublayer:gradientLayer atIndex:0];
+    
+    /*[_uiTakePictureButton setTitleColor: [UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 1.0f] forState:UIControlStateNormal];
     
     [_uiTakePictureButton setTitleColor:[UIColor colorWithRed:176.0f/256.0f green:1.0f/256.0f blue: 36.0f/256.0f alpha: 0.5f] forState:UIControlStateHighlighted ];
-    
-    _uiTakePictureButton.frame = CGRectMake(mainViewController.view.frame.size.width/2-80.0, mainViewController.view.frame.size.height-60.0, 160.0, 40.0);
+    */
+
+     
+     
     [mainViewController.view addSubview:_uiTakePictureButton];
     
     // Start Capture
