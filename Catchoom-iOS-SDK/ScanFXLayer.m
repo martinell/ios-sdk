@@ -78,7 +78,6 @@
 
 - (void)startAnimations
 {
-
     
     CAKeyframeAnimation *animationLeft2Right = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.x"];
     [animationLeft2Right setDuration:2.0];

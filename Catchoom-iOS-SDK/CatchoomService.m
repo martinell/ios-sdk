@@ -59,8 +59,13 @@
                                              selector:@selector(reachabilityStatusChanged:)
                                                  name:RKReachabilityDidChangeNotification object:nil];
     
-    _isFinderModeON = FALSE;
-    _isOneShotModeON = FALSE;
+    if (_isOneShotModeON) {
+        [self stopOneShotMode];
+    }
+    if (_isFinderModeON)
+    {
+        [self stopFinderMode];
+    }
     
 }
 - (void)reachabilityStatusChanged:(NSNotification *)aNotification {
@@ -74,6 +79,20 @@
                                 otherButtonTitles:nil];
         reachAV.tag = 0;
         [reachAV show];
+        
+        NSLog(@"Cannot reach the Internet.");
+        
+        // Clean any ongoing search
+        if (_isOneShotModeON) {
+            [self stopOneShotMode];
+        }
+        if (_isFinderModeON)
+        {
+            [self stopFinderMode];
+        }
+        
+        NSError *error = [[NSError alloc] init];
+        [self didFailLoadWithError:error];
     }
     
     
@@ -367,7 +386,12 @@
 
 }
 
-
+-(void)stopOneShotMode
+{
+    _isOneShotModeON = FALSE;
+    [_scanFXlayer remove];
+    _scanFXlayer = nil;
+}
 
 #pragma mark - Finder Mode
 
@@ -560,9 +584,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }];
     
     if (_isOneShotModeON) {
-        _isOneShotModeON = FALSE;
-        [_scanFXlayer remove];
-        _scanFXlayer = nil;
+        [self stopOneShotMode];
+    }
+    if (([_parsedElements count] > 0) && _isFinderModeON) {
+        [self stopFinderMode];
     }
     
     [self.delegate didReceiveSearchResponse:_parsedElements];
@@ -571,6 +596,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 // in case of error we will call this method.
 
 - (void)didFailLoadWithError:(NSError *)error {
+    if (_isOneShotModeON) {
+        [self stopOneShotMode];
+    }
+    if (_isFinderModeON)
+    {
+        [self stopFinderMode];
+    }
     if([self.delegate respondsToSelector:@selector(didFailLoadWithError:)]){
         [self.delegate didFailLoadWithError:error];
     }
