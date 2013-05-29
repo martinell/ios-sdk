@@ -399,8 +399,16 @@
 -(void)stopOneShotMode
 {
     _isOneShotModeON = FALSE;
-    [_scanFXlayer remove];
-    _scanFXlayer = nil;
+    if (_scanFXlayer != nil) {
+        [_scanFXlayer remove];
+        _scanFXlayer = nil;
+    }
+
+    if (_uiTakePictureButton != nil) {
+        [_uiTakePictureButton removeFromSuperview];
+        _uiTakePictureButton = nil;
+    }
+
 }
 
 #pragma mark - Finder Mode
@@ -538,11 +546,15 @@
         
         _videoCaptureOutput = nil;
         
-        [_scanFXlayer remove];
-        _scanFXlayer = nil;
-        
-        [_uiStopFinderModeButton removeFromSuperview];
-        _uiStopFinderModeButton = nil;
+        if (_scanFXlayer != nil) {
+            [_scanFXlayer remove];
+            _scanFXlayer = nil;
+        }
+
+        if (_uiStopFinderModeButton != nil) {
+            [_uiStopFinderModeButton removeFromSuperview];
+            _uiStopFinderModeButton = nil;
+        }
         
         NSLog(@"Finder Mode stopped.");
     }
