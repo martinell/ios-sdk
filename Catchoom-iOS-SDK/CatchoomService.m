@@ -66,6 +66,11 @@
     {
         [self stopFinderMode];
     }
+
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(handleBecameActive)
+                                                 name: UIApplicationDidBecomeActiveNotification
+                                               object: nil];
     
 }
 - (void)reachabilityStatusChanged:(NSNotification *)aNotification {
@@ -98,8 +103,12 @@
     
 }
 
-
-
+-(void)handleBecameActive
+{
+    if (_isFinderModeON) {
+        [_scanFXlayer startAnimations];
+    }
+}
 
 + (CatchoomService *)sharedCatchoom
 {
@@ -109,6 +118,7 @@
         [sharedCatchoom beginServerConnection];
     });
     return sharedCatchoom;
+
 }
 
 
