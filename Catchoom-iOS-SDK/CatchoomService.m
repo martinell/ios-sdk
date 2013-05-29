@@ -46,7 +46,7 @@
 @synthesize _isFinderModeON;
 @synthesize _isOneShotModeON;
 
-#pragma mark -
+
 #pragma mark - RESTKit connection management
 
 //sets the new RKClient connection. Future library implementations for start up should go here
@@ -59,6 +59,8 @@
                                              selector:@selector(reachabilityStatusChanged:)
                                                  name:RKReachabilityDidChangeNotification object:nil];
     
+    _isFinderModeON = FALSE;
+    _isOneShotModeON = FALSE;
     
 }
 - (void)reachabilityStatusChanged:(NSNotification *)aNotification {
@@ -87,11 +89,10 @@
     dispatch_once(&once, ^ { sharedCatchoom = [[CatchoomService alloc] init];
         [sharedCatchoom beginServerConnection];
     });
-
     return sharedCatchoom;
 }
 
-#pragma mark -
+
 #pragma mark - Check tokens and server connectivity
 
 - (void)connect:(NSString *)token {
@@ -139,7 +140,7 @@
 
 
 
-#pragma mark -
+
 #pragma mark - Call to server to send image. this should always be a background thread
 
 -(void)search:(UIImage*)image
@@ -219,31 +220,72 @@
     
 }
 
-#pragma mark -
+#pragma mark - Video Capture Error handler
+- (void)showAlertOfErrorWithVideoCapture
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"ERROR" ,@"")
+                                                    message:@"Error while initializing the Video Capture Device."
+                                                   delegate:self
+                                          cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                          otherButtonTitles: nil];
+    [alert show];
+}
+
 #pragma mark - One-shot Mode
 
 - (void)startOneShotModeWithPreview:(UIViewController*)mainViewController
 {
     // Create and Configure a Capture Session with Low preset = 192x144
     _avCaptureSession = [[AVCaptureSession alloc] init];
+    if (_avCaptureSession == nil) {
+        NSLog(@"ERROR: Couldn't create AVCaptureSession.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
+    }
     _avCaptureSession.sessionPreset = AVCaptureSessionPresetMedium;
 
     
     // Create and Configure the Device and Device Input
     AVCaptureDevice *avCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if (avCaptureDevice == nil) {
+        NSLog(@"ERROR: Couldn't create AVCaptureDevice with AVMediaTypeVideo.");
+
+        [self showAlertOfErrorWithVideoCapture];
+        return;
+    }
+    
     
     NSError *error = nil;
     AVCaptureDeviceInput *avCaptureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:avCaptureDevice error:&error];
-    if (!avCaptureDeviceInput) {
-        NSLog(@"ERROR: Couldn't create AVCaptureDeviceInput.");
+    if (avCaptureDeviceInput == nil) {
+        NSLog(@"ERROR: Couldn't define AVCaptureDeviceInput for AVCaptureDevice.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
     }
+    
     if ( [_avCaptureSession canAddInput:avCaptureDeviceInput] )
     {
         [_avCaptureSession addInput:avCaptureDeviceInput];
     }
+    else{
+        NSLog(@"ERROR: Couldn't add AVCaptureDeviceInput.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
+    }
     
     // Create and Configure the Data Output
     _stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+    if (_stillImageOutput == nil) {
+        NSLog(@"ERROR: Couldn't create AVCaptureStillImageOutput.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
+    }
+    
+    
     NSDictionary *outputSettings = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
     [_stillImageOutput setOutputSettings:outputSettings];
     
@@ -251,6 +293,14 @@
     {
         [_avCaptureSession addOutput:_stillImageOutput];
     }
+    else
+    {
+        NSLog(@"ERROR: Couldn't add AVCaptureStillImageOutput.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
+    }
+    
     // Add video preview
     if (mainViewController != nil) {
         _scanFXlayer = [[ScanFXLayer alloc] initWithViewController:mainViewController withSession:_avCaptureSession];
@@ -318,7 +368,7 @@
 }
 
 
-#pragma mark -
+
 #pragma mark - Finder Mode
 
 #define MAXVIDEOFRAMERATE 30
@@ -335,10 +385,22 @@
     
     // Create and Configure a Capture Session with Low preset = 192x144
     _avCaptureSession = [[AVCaptureSession alloc] init];
+    if (_avCaptureSession == nil) {
+        NSLog(@"ERROR: Couldn't create AVCaptureSession.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
+    }
     _avCaptureSession.sessionPreset = AVCaptureSessionPresetMedium;
     
     // Create and Configure the Device and Device Input
     AVCaptureDevice *avCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if (avCaptureDevice == nil) {
+        NSLog(@"ERROR: Couldn't create AVCaptureDevice with AVMediaTypeVideo.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
+    }
     
     if ([avCaptureDevice isFocusPointOfInterestSupported]) {
         NSError *lockError;
@@ -351,26 +413,49 @@
 
     }
     
-    
     NSError *error = nil;
     AVCaptureDeviceInput *avCaptureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:avCaptureDevice error:&error];
-    if (!avCaptureDeviceInput) {
-        NSLog(@"ERROR: Couldn't create AVCaptureDeviceInput.");
+    if (avCaptureDeviceInput == nil) {
+        NSLog(@"ERROR: Couldn't define AVCaptureDeviceInput for AVCaptureDevice.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
     }
+
     
     if ( [_avCaptureSession canAddInput:avCaptureDeviceInput] )
     {
         [_avCaptureSession addInput:avCaptureDeviceInput];
     }
+    else{
+        NSLog(@"ERROR: Couldn't add AVCaptureDeviceInput.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
+    }
+
     
     // Create and Configure the Data Output
     _videoCaptureOutput = [[AVCaptureVideoDataOutput alloc] init];
+    if (_videoCaptureOutput == nil) {
+        NSLog(@"ERROR: Couldn't create AVCaptureVideoDataOutput.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
+    }
     _videoCaptureOutput.videoSettings = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
     _videoCaptureOutput.alwaysDiscardsLateVideoFrames = YES;
     
     if ( [_avCaptureSession canAddOutput:_videoCaptureOutput] )
     {
         [_avCaptureSession addOutput:_videoCaptureOutput];
+    }
+    else
+    {
+        NSLog(@"ERROR: Couldn't add AVCaptureVideoDataOutput.");
+        
+        [self showAlertOfErrorWithVideoCapture];
+        return;
     }
     
     AVCaptureConnection *videoCaptureConnection = [_videoCaptureOutput connectionWithMediaType:AVMediaTypeVideo];
@@ -451,7 +536,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
 }
 
-#pragma mark -
+
 #pragma mark - Server Callbacks
 
 //this method creates the CatchoomItems and send them as an array to the application.
