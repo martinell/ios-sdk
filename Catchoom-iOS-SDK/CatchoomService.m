@@ -510,7 +510,7 @@
         [_uiStopFinderModeButton removeFromSuperview];
         _uiStopFinderModeButton = nil;
         
-        NSLog(@"Stopped Finder mode.");
+        NSLog(@"Finder Mode stopped.");
     }
 }
 
