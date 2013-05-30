@@ -14,11 +14,20 @@
 
 @protocol CatchoomServiceProtocol;
 
+typedef enum
+{
+    kSearchTypeImage,
+    kSearchTypeFinderMode,
+    kSearchTypeOneShotMode
+}SearchType;
+
 @interface CatchoomService : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property (nonatomic, weak) id <CatchoomServiceProtocol> delegate;
-@property BOOL _isFinderModeON;
-@property BOOL _isOneShotModeON;
+//@property BOOL _isFinderModeON;
+//@property BOOL _isOneShotModeON;
+
+- (SearchType)getSearchType;
 
 + (CatchoomService *)sharedCatchoom;
 

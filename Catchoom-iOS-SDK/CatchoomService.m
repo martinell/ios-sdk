@@ -21,6 +21,8 @@
 
     ScanFXLayer *_scanFXlayer;
     
+    SearchType _searchType;
+        
     // Finder Mode
     int32_t _NumOfFramesCaptured;
     int32_t _searchRate;
@@ -43,9 +45,13 @@
 
 @implementation CatchoomService
 @synthesize delegate = _delegate;
-@synthesize _isFinderModeON;
-@synthesize _isOneShotModeON;
+//@synthesize _isFinderModeON;
+//@synthesize _isOneShotModeON;
 
+- (SearchType)getSearchType
+{
+    return _searchType;
+}
 
 #pragma mark - RESTKit connection management
 
@@ -175,6 +181,7 @@
 -(void)search:(UIImage*)image
 {
     NSData *newImage = [ImageHandler imageNSDataFromUIImage: image];
+    _searchType = kSearchTypeImage;
     [self searchWithData:newImage];
 }
 
@@ -344,7 +351,7 @@
     
     // Start Capture
     _isOneShotModeON = TRUE;
-    _isFinderModeON = FALSE;
+    _searchType = kSearchTypeOneShotMode;
     [_avCaptureSession startRunning];
     
 }
@@ -511,7 +518,7 @@
         
         _uiStopFinderModeButton = [ScanFXLayer createUIButtonWithText:@"Stop capturing" andFrame:CGRectMake(mainViewController.view.frame.size.width/2-80.0, mainViewController.view.frame.size.height-60.0, 160.0, 40.0)];
         [_uiStopFinderModeButton addTarget:self
-                                 action:@selector(stopFinderMode)
+                                 action:@selector(stopFinderModeAndDelegate)
                        forControlEvents:UIControlEventTouchUpInside];
         
         [mainViewController.view addSubview:_uiStopFinderModeButton];
@@ -529,7 +536,7 @@
     // Start capturing
     NSLog(@"Starting Finder mode.");
     _isFinderModeON = TRUE;
-    _isOneShotModeON = FALSE;
+    _searchType = kSearchTypeFinderMode;
     [_scanFXlayer startAnimations];
     [_avCaptureSession startRunning];
     
@@ -560,6 +567,13 @@
     }
 }
 
+- (void)stopFinderModeAndDelegate
+{
+    [self stopFinderMode];
+    NSMutableArray *emptyArray = [NSMutableArray array];
+    [self.delegate didReceiveSearchResponse:emptyArray];
+}
+
 - (void)captureOutput:(AVCaptureOutput *)captureOutput
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection {
@@ -588,6 +602,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //this method creates the CatchoomItems and send them as an array to the application.
 
 - (void)didReceiveSearchResponse:(NSArray *)response {
+
+    if (_searchType == kSearchTypeOneShotMode) {
+        [self stopOneShotMode];
+    }
+    
+    if (_searchType == kSearchTypeFinderMode) {
+        if (([response count] > 0) && _isFinderModeON ){
+            [self stopFinderMode];
+        }
+        else {
+            // Ignore empty responses or incoming responses after Finder Mode is stopped.
+            return;
+        }
+    }
+    
     if (_parsedElements == nil) {
         _parsedElements = [NSMutableArray array];
     }else {
@@ -604,13 +633,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         model.iconName = [[obj valueForKey:@"metadata"] valueForKey:@"name"];
         [_parsedElements addObject:model];
     }];
-    
-    if (_isOneShotModeON) {
-        [self stopOneShotMode];
-    }
-    if (([_parsedElements count] > 0) && _isFinderModeON) {
-        [self stopFinderMode];
-    }
     
     [self.delegate didReceiveSearchResponse:_parsedElements];
 }
