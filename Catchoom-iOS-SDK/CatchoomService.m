@@ -271,6 +271,10 @@
 
 - (void)startOneShotModeWithPreview:(UIViewController*)mainViewController
 {
+    if (_isOneShotModeON) {
+        return;
+    }
+    
     // Create and Configure a Capture Session with Low preset = 192x144
     _avCaptureSession = [[AVCaptureSession alloc] init];
     if (_avCaptureSession == nil) {
@@ -342,6 +346,7 @@
         _scanFXlayer = [[ScanFXLayer alloc] initWithViewController:mainViewController withSession:_avCaptureSession];
     
         _uiTakePictureButton = [ScanFXLayer createUIButtonWithText:@"Take Picture" andFrame:CGRectMake(mainViewController.view.frame.size.width/2-80.0, mainViewController.view.frame.size.height-60.0, 160.0, 40.0)];
+        _uiTakePictureButton.enabled = NO;
         [_uiTakePictureButton addTarget:self
                                  action:@selector(captureImage)
                        forControlEvents:UIControlEventTouchUpInside];
@@ -353,11 +358,13 @@
     _isOneShotModeON = TRUE;
     _searchType = kSearchTypeOneShotMode;
     [_avCaptureSession startRunning];
-    
+    _uiTakePictureButton.enabled = YES;
 }
 
 - (void)captureImage
 {
+    _uiTakePictureButton.enabled = NO;
+    _uiTakePictureButton.hidden = YES;
     
     AVCaptureConnection *stillImageConnection = [_stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
     [_stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection completionHandler:
@@ -366,6 +373,16 @@
          if (error != nil) {
              NSLog(@"error with captureStillImageAsynchronouslyFromConnection %@", [error localizedDescription]);
          }
+         
+         // Stop Camera Capture
+         [_avCaptureSession stopRunning];
+         
+         [_scanFXlayer startAnimations];
+         
+         [_uiTakePictureButton removeFromSuperview];
+         _uiTakePictureButton = nil;
+         
+         _stillImageOutput = nil;
          
           /*// Uncomment if exif details are needed.
           CFDictionaryRef exifAttachments = CMGetAttachment(imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
@@ -389,23 +406,12 @@
              [self searchWithData:imageData];
          });
          dispatch_release(backgroundQueue);
-         
-         // Stop Camera Capture
-         [_avCaptureSession stopRunning];
-         
-         [_scanFXlayer startAnimations];
-         
-         [_uiTakePictureButton removeFromSuperview];
-         _uiTakePictureButton = nil;
-         
-         _stillImageOutput = nil;
      }];
 
 }
 
 -(void)stopOneShotMode
 {
-    _isOneShotModeON = FALSE;
     if (_scanFXlayer != nil) {
         [_scanFXlayer remove];
         _scanFXlayer = nil;
@@ -415,7 +421,7 @@
         [_uiTakePictureButton removeFromSuperview];
         _uiTakePictureButton = nil;
     }
-
+    _isOneShotModeON = FALSE;
 }
 
 #pragma mark - Finder Mode
@@ -426,9 +432,15 @@
 // Creates an AVCaptureSession suitable for Finder Mode.
 - (void)startFinderMode:(int32_t)searchesPerSecond withPreview:(UIViewController*)mainViewController
 {
+    if (_isFinderModeON) {
+        return;
+    }
     
-    if  (searchesPerSecond <= 0)
+    if (searchesPerSecond <= 0)
     {
+        searchesPerSecond = 1;
+    }
+    if (searchesPerSecond > 2) {
         searchesPerSecond = 2;
     }
     
@@ -517,6 +529,7 @@
         _scanFXlayer = [[ScanFXLayer alloc] initWithViewController:mainViewController withSession:_avCaptureSession];
         
         _uiStopFinderModeButton = [ScanFXLayer createUIButtonWithText:@"Stop capturing" andFrame:CGRectMake(mainViewController.view.frame.size.width/2-80.0, mainViewController.view.frame.size.height-60.0, 160.0, 40.0)];
+        _uiStopFinderModeButton.enabled = NO;
         [_uiStopFinderModeButton addTarget:self
                                  action:@selector(stopFinderModeAndDelegate)
                        forControlEvents:UIControlEventTouchUpInside];
@@ -540,13 +553,14 @@
     [_scanFXlayer startAnimations];
     [_avCaptureSession startRunning];
     
+    _uiStopFinderModeButton.enabled = YES;
+    
 }
 
 // Stops the AVCaptureSession and bails other elements necessary for Finder Mode.
 - (void)stopFinderMode
 {
     if (_isFinderModeON) {
-        _isFinderModeON = FALSE;
         
         // Stop Camera Capture
         [_avCaptureSession stopRunning];
@@ -564,6 +578,7 @@
         }
         
         NSLog(@"Finder Mode stopped.");
+        _isFinderModeON = FALSE;
     }
 }
 
